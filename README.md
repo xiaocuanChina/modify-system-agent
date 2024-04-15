@@ -33,7 +33,6 @@
 ![Clip_2024-04-15_17-25-09](https://github.com/xiaocuanChina/view-system-agents-2.0/assets/113506112/d8a8c2aa-5a0c-411a-b342-e7f3e2388902)
 头大，因为自己的疏忽，倒是代码没了，这个是源库的备份版本，以后只更新这个版本，原版本等我的账号被取消标记之后再删库把
 
-话说我看别人的UI画的好好看，为什么我这个画出来和Swing不相上下
 # 页面
 ![Clip_2024-04-12_11-32-43](https://github.com/xiaocuanChina/view-system-agents/assets/113506112/f2091589-65b2-4202-9948-2891efc9f70e)
 
