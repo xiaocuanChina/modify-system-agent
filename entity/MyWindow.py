@@ -38,7 +38,6 @@ class MyWindow(QWidget):
         self.server_ip_str = None
         self.server_ip_position_label = None
         self.server_ip_position_str = None
-        self.ipv4_add = None
         self.edit_server_btn = None
         self.show_text_edit = None
         self.separate_text_edit = None
@@ -62,6 +61,7 @@ class MyWindow(QWidget):
 
         self.ipv4_add_str_title = "本机IPv4地址："
         self.ipv4_add_str_content = get_IPv4_path()
+        # self.ipv4_add_str_content = get_IPv4_path()
 
         self.proxy_server_info_str_title1 = "代理服务器信息："
         self.proxy_server_info_str_title2 = "请设置代理服务器信息: "
@@ -128,7 +128,7 @@ class MyWindow(QWidget):
         self.get_server_ip_msg_btn.setToolTip(split_string_by_length(tip_str2, self.TEXT_WIDTH))
         self.get_server_ip_msg_btn.clicked.connect(self.get_server_ip_msg_fn)
 
-        # self.ipv4_add = get_IPv4_path()
+        # self.ipv4_add_str_content = get_IPv4_path()
         self.ipv4_add_str_label = QLabel(self.ipv4_add_str_title + self.ipv4_add_str_content, self)
 
         # 代理服务器信息
@@ -289,101 +289,97 @@ class MyWindow(QWidget):
 
             self.copy_server_btn.show()
             self.edit_server_btn.show()
-            # 刷新服务器地址
-            set_proxy_server_info_label(self.proxy_server_info_str_label)
-            local_server, local_port = get_local_proxy_windows()
-            self.proxy_server_info_str_content = f"{local_server}:{local_port}"
-            self.proxy_server_info_str_label.setText(self.proxy_server_info_str_title1 + self.proxy_server_info_str_content)
 
-            # 刷新代理状态
-            self.agent_state_label_content = get_agent_status()
-            self.agent_state_label.setText(self.agent_state_label_title + self.agent_state_label_content)
+        # 刷新服务器地址
+        set_proxy_server_info_label(self.proxy_server_info_str_label)
+        local_server, local_port = get_local_proxy_windows()
+        self.proxy_server_info_str_content = f"{local_server}:{local_port}"
+        self.proxy_server_info_str_label.setText(
+            self.proxy_server_info_str_title1 + self.proxy_server_info_str_content)
 
-            # 设置按钮刷新时间
-            set_refresh_btn_label(self.refresh_btn)
+        # 刷新代理状态
+        self.agent_state_label_content = get_agent_status()
+        self.agent_state_label.setText(self.agent_state_label_title + self.agent_state_label_content)
 
+        # 设置按钮刷新时间
+        set_refresh_btn_label(self.refresh_btn)
 
-def set_windows_top(self):
-    """
-    设置窗口置顶
-    :return:
-    """
-    # 获取窗口标志
-    flags = self.windowFlags()
+    def set_windows_top(self):
+        """
+        设置窗口置顶
+        :return:
+        """
+        # 获取窗口标志
+        flags = self.windowFlags()
 
-    # 检查窗口是否置顶
-    if flags & QtCore.Qt.WindowStaysOnTopHint:
-        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint, False)
-        self.windows_top_btn.setIcon(QIcon(get_package_icon_path('data/image/置顶-false.png')))
-    else:
-        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
-        self.windows_top_btn.setIcon(QIcon(get_package_icon_path('data/image/置顶-true.png')))
-    self.show()
+        # 检查窗口是否置顶
+        if flags & QtCore.Qt.WindowStaysOnTopHint:
+            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint, False)
+            self.windows_top_btn.setIcon(QIcon(get_package_icon_path('data/image/置顶-false.png')))
+        else:
+            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+            self.windows_top_btn.setIcon(QIcon(get_package_icon_path('data/image/置顶-true.png')))
+        self.show()
 
+    def copy_proxy_server_address(self):
+        """
+        需要复制的代理服务器地址
+        """
+        copy_server, copy_port = get_local_proxy_windows()
+        proxy_server_address = f"https://{copy_server}:{copy_port}"
+        copy_str_and_set_btn(proxy_server_address, self.copy_server_btn)
 
-def copy_proxy_server_address(self):
-    """
-    需要复制的代理服务器地址
-    """
-    copy_server, copy_port = get_local_proxy_windows()
-    proxy_server_address = f"https://{copy_server}:{copy_port}"
-    copy_str_and_set_btn(proxy_server_address, self.copy_server_btn)
+    def copy_ipv4_address(self):
+        """
+        复制ipv4地址的方法
+        """
+        copy_str_and_set_btn(self.ipv4_add_str_content, self.copy_ip_btn)
 
+    def get_server_ip_msg_fn(self):
+        self.get_server_ip_msg_btn.hide()
+        QApplication.processEvents()
+        print("--")
+        country, city = get_proxy_location()
+        self.server_ip_position_content = f"{country} {city}"
+        self.server_ip_position_label.setText(self.server_ip_position_title + self.server_ip_position_content)
+        self.get_server_ip_msg_btn.show()
 
-def copy_ipv4_address(self):
-    """
-    复制ipv4地址的方法
-    """
-    copy_str_and_set_btn(self.ipv4_add, self.copy_ip_btn)
+    def edit_server_info(self):
+        """
+        修改代理服务器配置
+        """
+        # 核心代码 设置不同组件的显隐藏
+        self.copy_server_btn.hide()
+        self.edit_server_btn.hide()
+        self.server_text_edit.show()
+        self.separate_text_edit.show()
+        self.port_text_edit.show()
 
+        # 获取默认的代理服务器信息
+        default_server, default_port = get_local_proxy_windows()
+        self.server_text_edit.setText(default_server)
+        self.port_text_edit.setText(default_port)
 
-def get_server_ip_msg_fn(self):
-    self.get_server_ip_msg_btn.hide()
-    QApplication.processEvents()
-    print("--")
-    country, city = get_proxy_location()
-    self.server_ip_position_content = f"{country} {city}"
-    self.server_ip_position_label.setText(self.server_ip_position_title + self.server_ip_position_content)
-    self.get_server_ip_msg_btn.show()
+        # 设置在“修改服务器状态”下的显示的内容
+        self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
+        self.refresh_btn.setText("点我保存")
+        self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/保存.png')))
+        self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
 
-
-def edit_server_info(self):
-    """
-    修改代理服务器配置
-    """
-    # 核心代码 设置不同组件的显隐藏
-    self.copy_server_btn.hide()
-    self.edit_server_btn.hide()
-    self.server_text_edit.show()
-    self.separate_text_edit.show()
-    self.port_text_edit.show()
-
-    # 获取默认的代理服务器信息
-    default_server, default_port = get_local_proxy_windows()
-    self.server_text_edit.setText(default_server)
-    self.port_text_edit.setText(default_port)
-
-    # 设置在“修改服务器状态”下的显示的内容
-    self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
-    self.refresh_btn.setText("点我保存")
-    self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/保存.png')))
-    self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
-
-
-def get_connection_time_fn(self):
-    self.get_connection_time_btn.hide()
-    QApplication.processEvents()
-    test_url, get_connection_time_tip = update_connection_time_tip_test_url()
-    timeout = self.config_content["timeout"]
-    latency = get_connection_time(test_url, timeout)
-    # font_color = "#22B14C"
-    if float(latency) >= 1900:
-        font_color = "#ED1C24"
-    elif float(latency) == -1:
-        font_color = "#FF0000"
-    else:
-        font_color = "#22B14C"
-    self.get_connection_time_content = f"<font color='{font_color}'>{latency}ms</font>"
-    self.get_connection_time_label.setText(self.get_connection_time_title + self.get_connection_time_content)
-    self.get_connection_time_btn.setToolTip(get_connection_time_tip)
-    self.get_connection_time_btn.show()
+    def get_connection_time_fn(self):
+        self.get_connection_time_btn.hide()
+        QApplication.processEvents()
+        test_url, get_connection_time_tip = update_connection_time_tip_test_url()
+        timeout = self.config_content["timeout"]
+        latency = get_connection_time(test_url, timeout)
+        # font_color = "#22B14C"
+        if float(latency) >= 1900:
+            font_color = "#ED1C24"
+        elif float(latency) == -1:
+            font_color = "#FF0000"
+        else:
+            font_color = "#22B14C"
+        self.get_connection_time_content = f"<font color='{font_color}'>{latency}ms</font>"
+        self.get_connection_time_label.setText(self.get_connection_time_title + self.get_connection_time_content)
+        self.get_connection_time_btn.setToolTip(get_connection_time_tip)
+        self.get_connection_time_btn.show()

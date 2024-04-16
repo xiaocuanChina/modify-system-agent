@@ -94,9 +94,10 @@ def get_connection_time(url, timeout=2.5):
 
 
 if __name__ == '__main__':
-    target_url = 'https://chat.openai.com/c/8a31e7d8-437a-48af-a836-8eacea680fb5'
-    latency = get_connection_time(target_url)
-    if latency is not None:
-        print(f"连接到 {target_url} 大约需要 {latency} 毫秒")
-    else:
-        print(f"无法获取到 {target_url} 的延迟")
+    print(get_proxy_location("../data/GeoLite2-City.mmdb"))
+    # target_url = 'https://chat.openai.com/c/8a31e7d8-437a-48af-a836-8eacea680fb5'
+    # latency = get_connection_time(target_url)
+    # if latency is not None:
+    #     print(f"连接到 {target_url} 大约需要 {latency} 毫秒")
+    # else:
+    #     print(f"无法获取到 {target_url} 的延迟")

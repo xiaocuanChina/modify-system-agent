@@ -12,7 +12,7 @@
 
 # GeoLite2-City.mmdb更新
 
-> 当前使用的版本：GeoLite2-City_20240409.tar.gz
+> 当前使用的版本：GeoLite2-City_20240412.tar.gz
 
 因为这个依赖于GeoLite2-City.mmdb数据集，GeoLite2-City.mmdb数据集的更新又比较频繁（一周一次），下面是获取最新的步骤
 
