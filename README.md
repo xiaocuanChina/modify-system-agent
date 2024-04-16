@@ -28,10 +28,10 @@
 
 通过上方的方式下载GeoLite2-City_*.tar.gz文件，解压缩获取GeoLite2-City.mmdb文件，将该文件替换到data目录下即可
 
-  
+
 # 至暗时刻
 ![Clip_2024-04-15_17-25-09](https://github.com/xiaocuanChina/view-system-agents-2.0/assets/113506112/d8a8c2aa-5a0c-411a-b342-e7f3e2388902)
-头大，因为自己的疏忽，倒是代码没了，这个是源库的备份版本，以后只更新这个版本，原版本等我的账号被取消标记之后再删库把
+头大，因为自己的疏忽，导致代码没了，这个是源库的备份版本，以后只更新这个版本，原版本等我的账号被取消标记之后再删库把
 
 # 页面
 ![Clip_2024-04-12_11-32-43](https://github.com/xiaocuanChina/view-system-agents/assets/113506112/f2091589-65b2-4202-9948-2891efc9f70e)
@@ -69,3 +69,24 @@
     > 同样，因为这个也是请求了网络，所以这个按钮在点击了之后我也做了隐藏
 
     这个不是网络延时，是你连接到目标地址所需要花费的时长（就是你在浏览器输入网址，从回车到你可以点击网址的大致时间）
+
+# config.json
+
+-  testConnectionTimeUrl
+
+    - 测试连接时长的路径
+
+- timeout
+
+    - 连接时长超时时长设置
+
+- localJsonConfigurationFileURL
+
+    > 读取配置文件的作用是使代理检测地址和测试连接时长的路径一致，
+
+    - 如果本地存在代理的配置文件（限json格式），可以选择直接读取本地文件这里填本地代理配置文件的路径
+
+- localJsonConfigurationItem
+
+    - json文件的key路径（如果localJsonConfigurationFileURL配置了，这个也需要配置）
+
