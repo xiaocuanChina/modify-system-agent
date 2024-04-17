@@ -42,7 +42,9 @@ def copy_str_and_set_btn(s, my_btn):
     my_btn.setIcon(QIcon(get_package_icon_path('data/image/成功.png')))
 
 
-def split_string_by_length(input_str, length):
+def split_string_by_length(input_str, length=None):
+    if length is None:
+        length = len(input_str) + 1
     result = [input_str[i:i + length] for i in range(0, len(input_str), length)]
     return '<br/>'.join(result)
 

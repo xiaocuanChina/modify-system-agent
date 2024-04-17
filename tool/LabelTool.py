@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon
 from tool.IPTool import get_IPv4_path
 from tool.FileTool import read_config_json_file
 from tool.proxyTool import get_local_proxy_windows, get_agent_status
-from tool.strTool import get_package_icon_path
+from tool.strTool import get_package_icon_path, split_string_by_length
 
 
 def set_proxy_server_info_label(label):
@@ -49,9 +49,10 @@ def set_refresh_btn_label(label):
     """
     curr_time = datetime.now()
     refresh_time = curr_time.strftime("%H:%M:%S")
-    show_time_str = f'刷新：{refresh_time}.{curr_time.microsecond // 1000}'
+    show_time_str = f' {refresh_time}.{curr_time.microsecond // 1000}'
     label.setText(show_time_str)
-    label.setIcon(QIcon(get_package_icon_path('')))
+    label.setIcon(QIcon(get_package_icon_path('data/image/刷新时间.png')))
+    label.setToolTip(split_string_by_length("上次刷新的时间"))
 
 
 def update_connection_time_tip_test_url():

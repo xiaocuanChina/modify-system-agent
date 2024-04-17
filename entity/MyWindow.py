@@ -186,7 +186,7 @@ class MyWindow(QWidget):
         exit_btn.clicked.connect(self.button3Clicked)
 
         self.refresh_btn = QPushButton('刷新', self)
-        self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/刷新.png')))
+        self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/刷新时间.png')))
         self.refresh_btn.clicked.connect(self.refresh)
 
         self.windows_top_btn = QPushButton('点我置顶', self)
