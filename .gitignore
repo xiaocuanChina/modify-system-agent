@@ -5,3 +5,4 @@ test.py
 itemFolder
 data/config.json
 tool/__pycache__/
+entity/__pycache__/
