@@ -4,3 +4,4 @@ test.py
 .idea
 itemFolder
 data/config.json
+tool/__pycache__/

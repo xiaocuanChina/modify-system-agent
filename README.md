@@ -13,25 +13,27 @@
 # GeoLite2-City.mmdb更新
 
 > 当前使用的版本：GeoLite2-City_20240412.tar.gz
+>
+> 需要下载的为：GeoLite2 City
 
-因为这个依赖于GeoLite2-City.mmdb数据集，GeoLite2-City.mmdb数据集的更新又比较频繁（一周一次），下面是获取最新的步骤
+这个依赖于GeoLite2-City.mmdb数据集，GeoLite2-City.mmdb数据集的更新比较频繁（每周二、周五更新），需要保持最新的请点击下方的下载地址下载最新的数据集
 
-1. [注册获取许可证](https://www.maxmind.com/en/accounts/current/license-key)
+[数据库下载地址，需要登录](https://www.maxmind.com/en/accounts/current/geoip/downloads)
 
-2. [数据库永久下载地址](https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz)
 
-  - 下载是需要输入许可证，填入许可证ID和key即可，不是你登录注册时的用户名
-
-3. [数据库SHA256码](https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz.sha256)
 
 ## 如何替换
 
 通过上方的方式下载GeoLite2-City_*.tar.gz文件，解压缩获取GeoLite2-City.mmdb文件，将该文件替换到data目录下即可
 
 
+
+
 # 至暗时刻
 ![Clip_2024-04-15_17-25-09](https://github.com/xiaocuanChina/view-system-agents-2.0/assets/113506112/d8a8c2aa-5a0c-411a-b342-e7f3e2388902)
 头大，因为自己的疏忽，导致代码没了，这个是源库的备份版本，以后只更新这个版本，原版本等我的账号被取消标记之后再删库把
+
+
 
 # 页面
 ![Clip_2024-04-17_08-57-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/30c457f7-d6b8-4cab-9898-e80cf82e0c22)
@@ -55,7 +57,7 @@
 
     > 当初就是为了快速设置这个才编写的程序,其实你win+i键然后搜索【代理】，点击之后右侧菜单会有一个【使用代理服务器】，你改他一样的
 
-    顾名思义，就是你系统代理服务器是否启用，如果是管的话你就放不了外网了
+    顾名思义，就是你系统代理服务器是否启用，如果是关的话你就访不了外网了
 
 - 服务器地理位置
 
@@ -70,6 +72,8 @@
     > 同样，因为这个也是请求了网络，所以这个按钮在点击了之后我也做了隐藏
 
     这个不是网络延时，是你连接到目标地址所需要花费的时长（就是你在浏览器输入网址，从回车到你可以点击网址的大致时间）
+    
+    
 
 # config.json
 
