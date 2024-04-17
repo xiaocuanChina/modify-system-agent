@@ -1,4 +1,4 @@
-# 免责声明
+![Clip_2024-04-17_08-57-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/cce184f5-3f39-4f94-a8e0-b83997990acc)# 免责声明
 
 本程序所采用的GeoLite2-City.mmdb数据集由第三方提供，其对台湾及香港的划分可能与某些政治立场或观点不符。
 
@@ -34,7 +34,8 @@
 头大，因为自己的疏忽，导致代码没了，这个是源库的备份版本，以后只更新这个版本，原版本等我的账号被取消标记之后再删库把
 
 # 页面
-![Clip_2024-04-12_11-32-43](https://github.com/xiaocuanChina/view-system-agents/assets/113506112/f2091589-65b2-4202-9948-2891efc9f70e)
+![Clip_2024-04-17_08-57-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/30c457f7-d6b8-4cab-9898-e80cf82e0c22)
+
 
 - 本机IPv4地址
 
