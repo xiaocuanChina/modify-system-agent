@@ -1,6 +1,6 @@
 {
   "testConnectionTimeUrl": "https://www.google.com",
   "timeout": 2.5,
-  "localJsonConfigurationFileURL": "",
-  "localJsonConfigurationItem": ""
+  "localJsonConfigurationFileURL": "E:\\Program Files\\v2rayN\\guiConfigs\\guiNConfig.json",
+  "localJsonConfigurationItem": "speedTestItem.speedPingTestUrl"
 }
