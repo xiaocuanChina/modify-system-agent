@@ -1,4 +1,4 @@
-![Clip_2024-04-17_08-57-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/cce184f5-3f39-4f94-a8e0-b83997990acc)# 免责声明
+# 免责声明
 
 本程序所采用的GeoLite2-City.mmdb数据集由第三方提供，其对台湾及香港的划分可能与某些政治立场或观点不符。
 
