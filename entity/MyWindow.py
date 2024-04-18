@@ -364,7 +364,7 @@ class MyWindow(QWidget):
         self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
         self.refresh_btn.setText("点我保存")
         self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/保存.png')))
-        self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
+        # self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
 
     def get_connection_time_fn(self):
         self.get_connection_time_btn.hide()
