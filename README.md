@@ -12,7 +12,7 @@
 
 # GeoLite2-City.mmdb更新
 
-> 当前使用的版本：GeoLite2-City_20240412.tar.gz
+> 当前使用的版本：GeoLite2-City_20240416.tar.gz（周二）
 >
 > 需要下载的为：GeoLite2 City
 
