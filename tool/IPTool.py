@@ -5,6 +5,7 @@ import aiohttp
 import requests
 import geoip2.database
 
+from tool.FileTool import read_config_json_file
 from tool.proxyTool import get_local_proxy_windows
 from tool.strTool import get_package_icon_path
 
@@ -37,19 +38,15 @@ def get_target_server_ip():
         'https': proxy_url
     }
     try:
-        response = requests.get(target_url, proxies=proxies)
+        config_json = read_config_json_file()
+        timeout = config_json["timeout"]
+        response = requests.get(target_url, proxies=proxies, timeout=timeout)
         # 从响应中获取目标服务器的 IP 地址
         target_ip = response.json()['origin']
         return target_ip
     except Exception as e:
-        print("Error:", e)
+        # print("Error:", e)
         return None
-    # # 代理服务器地址
-    # target_url = 'https://httpbin.org/ip'
-    # # 执行异步 HTTP 请求
-    # response_text = fetch_data(target_url)
-    # return response_text['origin']
-    # # print(response_text['origin'])
 
 
 async def fetch_data(target_url):
@@ -69,11 +66,14 @@ def get_proxy_location(fileish="data/GeoLite2-City.mmdb"):
     # reader = geoip2.database.Reader(get_package_icon_path("data/GeoLite2-City.mmdb"))
     proxy_ip = get_target_server_ip()
     try:
-        # 查询 IP 地址的地理位置信息
-        response = reader.city(proxy_ip)
-        country = response.country.name
-        city = response.city.name
-        return country, city
+        if proxy_ip:
+            # 查询 IP 地址的地理位置信息
+            response = reader.city(proxy_ip)
+            country = response.country.name
+            city = response.city.name
+            return country, city
+        else:
+            return "<font color='#FF0000'>连接", "超时</font>"
     except geoip2.errors.AddressNotFoundError:
         return "Unknown", "Unknown"
     finally:
