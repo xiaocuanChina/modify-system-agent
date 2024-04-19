@@ -46,7 +46,8 @@
 
 
 # 页面
-![Uploading Clip_2024-04-19_11-17-32.png…]()
+![Clip_2024-04-19_11-17-32](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/7c343570-3009-448b-891a-07f5b410b1cf)
+
 
 
 
