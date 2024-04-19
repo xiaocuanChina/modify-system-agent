@@ -46,7 +46,7 @@
 
 
 # 页面
-![Clip_2024-04-19_11-17-32](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/7c343570-3009-448b-891a-07f5b410b1cf)
+![Clip_2024-04-19_16-04-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/2dac13e9-4373-4ace-b9f6-731448dede52)
 
 
 
