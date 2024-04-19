@@ -18,7 +18,17 @@
 
 这个依赖于GeoLite2-City.mmdb数据集，GeoLite2-City.mmdb数据集的更新比较频繁（每周二、周五更新），需要保持最新的请点击下方的下载地址下载最新的数据集
 
+## 方法1
+
 [数据库下载地址，需要登录](https://www.maxmind.com/en/accounts/current/geoip/downloads)
+
+## 方法2
+
+1. ***登录***获取自己的[许可证](https://www.maxmind.com/en/accounts/current/license-key)
+2. 创建自己的许可证，并获取GeoIP.conf文件
+3. 点击[永久下载地址](https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz)
+4. 输入GeoIP.conf中的AccountID和LicenseKey
+5. 即可下载最新的文件了
 
 
 
