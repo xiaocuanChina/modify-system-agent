@@ -76,8 +76,6 @@ def get_proxy_location(proxy_ip, fileish="data/GeoLite2-City.mmdb"):
                     item += f'{subdivision.name} '
             city = response.city.name
             item += f'{city} '
-
-            print(item)
             return item
             # return country, city
         else:
