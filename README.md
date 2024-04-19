@@ -46,7 +46,8 @@
 
 
 # 页面
-![Clip_2024-04-17_08-57-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/30c457f7-d6b8-4cab-9898-e80cf82e0c22)
+![Uploading Clip_2024-04-19_11-17-32.png…]()
+
 
 
 - 本机IPv4地址
