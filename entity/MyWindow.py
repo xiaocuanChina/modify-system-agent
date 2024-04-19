@@ -389,6 +389,8 @@ class MyWindow(QWidget):
             if self.agent_server_ip:
                 self.get_server_ip_msg_fn()
 
+        self.get_server_ip_msg_btn.show()
+
     def edit_server_info(self):
         """
         修改代理服务器配置
