@@ -79,6 +79,36 @@
 
     这里的服务器IP指的是你的代理服务器所在的ip
 
+- 欺诈分值
+
+    > 目前使用的是[scamalytics](https://scamalytics.com/)
+    >
+    > ![](https://scamalytics.com/wp-content/uploads/2016/06/Scamalytics-Logo-No-Strapline-Transparent-738x150.png)
+    >
+    > 通过py截取https://scamalytics.com/ip/{ip}页面的Fraud Score元素来获取分数
+    >
+    > 现在已经向官方发送申请API的邮件
+    >
+    > 如通过py直接获取网页的信息不符合网站条款的话的请联系我，我会删除相关代码
+    >
+    > 在API成功申请到之后我也会修改相关代码
+    >
+    > ---
+    >
+    > Currently using scamalytics
+    > Getting the score by intercepting the Fraud Score element of the https://scamalytics.com/ip/{ip} page via py
+    > I've already sent the API request email to the official website.
+    > If it is not in accordance with the terms and conditions of the website, please contact me and I will remove the code.
+    > I will also change the code after the API is successfully applied.
+    >
+    > 
+
+    评估节点安全状态的一种指标
+
+    如果你需要输入一些隐私的内容，你可以通过这个检测该节点是否安全，分数越低越安全
+
+
+
 - 服务器地理位置
 
     > 这个虽然可以查看节点位置，但是因为要请求网络，所以说你在点击按钮之后我会将按钮隐藏，并且这个时候因为处于请求状态，窗口是不能动的（也点不了），隐藏按钮也是为了防止用户多次点击导致窗口卡死
