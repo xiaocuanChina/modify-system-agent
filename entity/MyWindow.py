@@ -373,6 +373,9 @@ class MyWindow(QWidget):
         copy_str_and_set_btn(self.ipv4_add_str_content, self.copy_ip_btn)
 
     def get_server_ip_msg_fn(self):
+        """
+        获取服务器地理位置的方法
+        """
         self.get_server_ip_msg_btn.hide()
         QApplication.processEvents()
         # print("--")
@@ -382,7 +385,8 @@ class MyWindow(QWidget):
             self.server_ip_position_label.setText(self.server_ip_position_title + self.server_ip_position_content)
             self.get_server_ip_msg_btn.show()
         else:
-            if self.agent_server_ip_refresh_fn():
+            self.agent_server_ip_refresh_fn()
+            if self.agent_server_ip:
                 self.get_server_ip_msg_fn()
 
     def edit_server_info(self):
@@ -408,6 +412,9 @@ class MyWindow(QWidget):
         # self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
 
     def get_connection_time_fn(self):
+        """
+        获取连接速度
+        """
         self.get_connection_time_btn.hide()
         QApplication.processEvents()
         test_url, get_connection_time_tip = update_connection_time_tip_test_url()
@@ -431,7 +438,8 @@ class MyWindow(QWidget):
         if self.agent_server_ip:
             copy_str_and_set_btn(self.agent_server_ip, self.agent_server_ip_copy_btn)
         else:
-            if self.agent_server_ip_refresh_fn():
+            self.agent_server_ip_refresh_fn()
+            if self.agent_server_ip:
                 self.agent_server_ip_copy_fn()
 
     def agent_server_ip_refresh_fn(self):
@@ -449,10 +457,12 @@ class MyWindow(QWidget):
         self.agent_server_ip_refresh_btn.show()
         self.agent_server_ip_copy_btn.show()
 
-        if self.agent_server_ip is None:
-            return None
+        # return self.agent_server_ip
 
     def get_fraud_score_fn(self):
+        """
+        获取欺诈分值
+        """
         self.get_fraud_score_btn.hide()
         QApplication.processEvents()
         if self.agent_server_ip:
@@ -481,6 +491,7 @@ class MyWindow(QWidget):
                 f"{self.fraud_score_label_title}"
                 f"<font color ='{font_color}'>{self.fraud_score_label_content}</font>")
         else:
-            if self.agent_server_ip_refresh_fn():
+            self.agent_server_ip_refresh_fn()
+            if self.agent_server_ip:
                 self.get_fraud_score_fn()
         self.get_fraud_score_btn.show()
