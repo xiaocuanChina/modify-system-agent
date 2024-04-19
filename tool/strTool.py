@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 
 from PyQt5.QtGui import QGuiApplication, QIcon
@@ -42,11 +43,36 @@ def copy_str_and_set_btn(s, my_btn):
     my_btn.setIcon(QIcon(get_package_icon_path('data/image/成功.png')))
 
 
-def split_string_by_length(input_str, length=None):
-    if length is None:
-        length = len(input_str) + 1
-    result = [input_str[i:i + length] for i in range(0, len(input_str), length)]
-    return '<br/>'.join(result)
+def split_string_by_length(text, max_length=None):
+    """
+    将字符按照自定长度进行分割（忽略h5标签）
+    """
+    if max_length:
+        # 使用正则表达式捕获HTML标签
+        html_tag_regex = re.compile(r'<\/?[a-z][^>]*>')
+        tags = html_tag_regex.findall(text)
+
+        # 去除HTML标签,并将文本分割成多个段落
+        clean_text = html_tag_regex.sub('', text)
+        chunks = [clean_text[i:i + max_length] for i in range(0, len(clean_text), max_length)]
+
+        # 重新插入HTML标签
+        result = []
+        tag_index = 0
+        text_index = 0
+        for chunk in chunks:
+            result.append(chunk)
+            while tag_index < len(tags) and text.find(tags[tag_index], text_index) < text_index + len(chunk):
+                tag = tags[tag_index]
+                position = text.find(tag, text_index) - text_index
+                result[-1] = result[-1][:position] + tag + result[-1][position:]
+                tag_index += 1
+                text_index += position + len(tag)
+            text_index += len(chunk)
+        return '\n'.join(result)
+        # return '<br/>'.join(result)
+    else:
+        return text
 
 
 if __name__ == '__main__':
