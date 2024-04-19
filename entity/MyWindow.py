@@ -1,12 +1,9 @@
-import asyncio
-import time
-from datetime import datetime
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QToolTip, QLineEdit, QApplication
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication
 
-from tool.LabelTool import set_proxy_server_info_label, set_ipv4_add_str_label, set_agent_state_label, \
+from tool.LabelTool import set_proxy_server_info_label, \
     set_refresh_btn_label, update_connection_time_tip_test_url
-from tool.IPTool import get_IPv4_path, get_proxy_location, get_target_server_ip, get_connection_time
+from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip
 from tool.FileTool import read_config_json_file
 from tool.strTool import *
 from tool.proxyTool import *
@@ -26,15 +23,17 @@ from tool.proxyTool import *
 
 
 class MyWindow(QWidget):
-    # logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
     def __init__(self):
         super().__init__()
 
+        # 初始化组件
+        self.agent_server_ip_refresh_btn = None
+        self.agent_server_ip_copy_btn = None
+        self.agent_server_ip_label = None
         self.get_connection_time_btn = None
         self.get_connection_time_label = None
         self.get_server_ip_msg_btn = None
-        self.server_ip_label = None
         self.server_ip_str = None
         self.server_ip_position_label = None
         self.server_ip_position_str = None
@@ -51,17 +50,23 @@ class MyWindow(QWidget):
         self.agent_state_label = None
         self.refresh_time = None
         self.windows_top_btn = None
+
+        # 初始化参数
+        # 代理IP地址
+        self.agent_server_ip = None
         self.config_content = read_config_json_file()
 
         self.get_connection_time_title = "连接时长为："
         self.get_connection_time_content = "None（点击按钮获取）"
+
+        self.agent_server_ip_label_title = "服务器IP："
+        self.agent_server_ip_label_content = "（点击按钮获取）"
 
         self.server_ip_position_title = "服务器地理位置："
         self.server_ip_position_content = "None None（点击按钮获取）"
 
         self.ipv4_add_str_title = "本机IPv4地址："
         self.ipv4_add_str_content = get_IPv4_path()
-        # self.ipv4_add_str_content = get_IPv4_path()
 
         self.proxy_server_info_str_title1 = "代理服务器信息："
         self.proxy_server_info_str_title2 = "请设置代理服务器信息: "
@@ -99,6 +104,7 @@ class MyWindow(QWidget):
 
         self.initUI()
 
+    # noinspection PyUnresolvedReferences
     def initUI(self):
 
         # 构建网络代理.png的绝对路径
@@ -115,11 +121,16 @@ class MyWindow(QWidget):
         self.get_connection_time_btn.setIcon(QIcon(get_package_icon_path("data/image/连接时长.png")))
         self.get_connection_time_btn.clicked.connect(self.get_connection_time_fn)
 
-        # country, city = get_proxy_location()
-        # country, city = "", ""
+        self.agent_server_ip_label = QLabel(self.agent_server_ip_label_title + self.agent_server_ip_label_content, self)
+        self.agent_server_ip_copy_btn = QPushButton('复制IP地址', self)
+        self.agent_server_ip_copy_btn.setIcon(QIcon(get_package_icon_path("data/image/复制.png")))
+        self.agent_server_ip_copy_btn.clicked.connect(self.agent_server_ip_copy_fn)
+        self.agent_server_ip_refresh_btn = QPushButton('刷新IP地址', self)
+        self.agent_server_ip_refresh_btn.setIcon(QIcon(get_package_icon_path("data/image/ipAddress.png")))
+        self.agent_server_ip_refresh_btn.clicked.connect(self.agent_server_ip_refresh_fn)
+
         self.server_ip_position_label = QLabel(self.server_ip_position_title + self.server_ip_position_content, self)
         # self.server_ip_label = QLabel(f"服务器IP: {get_target_server_ip()}", self)
-        # self.server_ip_label = QLabel(f"服务器IP: ", self)
         # self.server_ip_label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         self.get_server_ip_msg_btn = QPushButton('获取服务器信息', self)
@@ -241,12 +252,18 @@ class MyWindow(QWidget):
         function_but_x_box.addWidget(exit_btn)
         y_box.addLayout(function_but_x_box)
 
-        # 显示ip地址布局
+        # 显示IP布局
         server_ip_x_box = QHBoxLayout()
-        # server_ip_x_box.addWidget(self.server_ip_label)
-        server_ip_x_box.addWidget(self.server_ip_position_label)
-        server_ip_x_box.addWidget(self.get_server_ip_msg_btn)
+        server_ip_x_box.addWidget(self.agent_server_ip_label)
+        server_ip_x_box.addWidget(self.agent_server_ip_copy_btn)
+        server_ip_x_box.addWidget(self.agent_server_ip_refresh_btn)
         y_box.addLayout(server_ip_x_box)
+
+        # 显示地址布局
+        server_ip_position_x_box = QHBoxLayout()
+        server_ip_position_x_box.addWidget(self.server_ip_position_label)
+        server_ip_position_x_box.addWidget(self.get_server_ip_msg_btn)
+        y_box.addLayout(server_ip_position_x_box)
 
         # 获取连接时长的布局
         connection_time_x_box = QHBoxLayout()
@@ -338,11 +355,15 @@ class MyWindow(QWidget):
     def get_server_ip_msg_fn(self):
         self.get_server_ip_msg_btn.hide()
         QApplication.processEvents()
-        print("--")
-        country, city = get_proxy_location()
-        self.server_ip_position_content = f"{country} {city}"
-        self.server_ip_position_label.setText(self.server_ip_position_title + self.server_ip_position_content)
-        self.get_server_ip_msg_btn.show()
+        # print("--")
+        if self.agent_server_ip:
+            country, city = get_proxy_location(self.agent_server_ip)
+            self.server_ip_position_content = f"{country} {city}"
+            self.server_ip_position_label.setText(self.server_ip_position_title + self.server_ip_position_content)
+            self.get_server_ip_msg_btn.show()
+        else:
+            self.agent_server_ip_refresh_fn()
+            self.get_server_ip_msg_fn()
 
     def edit_server_info(self):
         """
@@ -370,8 +391,7 @@ class MyWindow(QWidget):
         self.get_connection_time_btn.hide()
         QApplication.processEvents()
         test_url, get_connection_time_tip = update_connection_time_tip_test_url()
-        timeout = self.config_content["timeout"]
-        latency = get_connection_time(test_url, timeout)
+        latency = get_connection_time(test_url)
         # font_color = "#22B14C"
         if float(latency) >= 1900:
             font_color = "#ED1C24"
@@ -383,3 +403,27 @@ class MyWindow(QWidget):
         self.get_connection_time_label.setText(self.get_connection_time_title + self.get_connection_time_content)
         self.get_connection_time_btn.setToolTip(get_connection_time_tip)
         self.get_connection_time_btn.show()
+
+    def agent_server_ip_copy_fn(self):
+        """
+        复制IP地址
+        """
+        if self.agent_server_ip:
+            copy_str_and_set_btn(self.agent_server_ip, self.agent_server_ip_copy_btn)
+        else:
+            self.agent_server_ip_refresh_fn()
+            self.agent_server_ip_copy_fn()
+
+    def agent_server_ip_refresh_fn(self):
+        """
+        刷新IP地址
+        """
+        self.agent_server_ip_refresh_btn.hide()
+        self.agent_server_ip_copy_btn.hide()
+        QApplication.processEvents()
+        self.agent_server_ip = get_target_server_ip()
+        self.agent_server_ip_label_content = self.agent_server_ip
+        self.agent_server_ip_label.setText(f"{self.agent_server_ip_label_title}{self.agent_server_ip_label_content}")
+
+        self.agent_server_ip_refresh_btn.show()
+        self.agent_server_ip_copy_btn.show()
