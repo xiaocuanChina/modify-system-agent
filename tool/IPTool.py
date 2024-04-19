@@ -44,7 +44,7 @@ def get_target_server_ip():
         target_ip = response.json()['origin']
         return target_ip
     except Exception as e:
-        # print("Error:", e)
+        print("Error:", e)
         return None
 
 
@@ -62,18 +62,28 @@ def get_proxy_location(proxy_ip, fileish="data/GeoLite2-City.mmdb"):
     """
     # 载入 GeoIP2 数据库
     reader = geoip2.database.Reader(fileish=fileish, locales=["zh-CN"])
+    print(reader)
     # proxy_ip = get_target_server_ip()
     try:
         if proxy_ip:
+            item = ""
             # 查询 IP 地址的地理位置信息
             response = reader.city(proxy_ip)
             country = response.country.name
+            item += f'{country} '
+            for subdivision in response.subdivisions:
+                if subdivision.name:
+                    item += f'{subdivision.name} '
             city = response.city.name
-            return country, city
+            item += f'{city} '
+
+            print(item)
+            return item
+            # return country, city
         else:
             return "<font color='#FF0000'>连接", "超时</font>"
     except geoip2.errors.AddressNotFoundError:
-        return "Unknown", "Unknown"
+        return "Unknown Unknown"
     finally:
         reader.close()
 
@@ -96,10 +106,11 @@ def get_curr_ip_fraud_score(ip):
     """
     获得IP的欺诈分值
     """
-    # ip = get_target_server_ip()
     url = f'https://scamalytics.com/ip/{ip}'
 
-    response = requests.get(url)
+    config_json = read_config_json_file()
+    timeout = config_json["timeout"]
+    response = requests.get(url, timeout=timeout)
 
     if response.status_code == 200:
         # 使用正则表达式匹配Fraud Score的分数部分
@@ -111,7 +122,7 @@ def get_curr_ip_fraud_score(ip):
 
 
 if __name__ == '__main__':
-    # print(get_proxy_location("../data/GeoLite2-City.mmdb"))
+    print(get_proxy_location("104.28.156.115", "../data/GeoLite2-City.mmdb"))
 
     # target_url = 'https://chat.openai.com/c/8a31e7d8-437a-48af-a836-8eacea680fb5'
     # latency = get_connection_time(target_url)
@@ -119,4 +130,4 @@ if __name__ == '__main__':
     #     print(f"连接到 {target_url} 大约需要 {latency} 毫秒")
     # else:
     #     print(f"无法获取到 {target_url} 的延迟")
-    print(get_curr_ip_fraud_score())
+    # print(get_curr_ip_fraud_score())
