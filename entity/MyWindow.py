@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayo
 
 from tool.LabelTool import set_proxy_server_info_label, \
     set_refresh_btn_label, update_connection_time_tip_test_url
-from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip
+from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip, \
+    get_curr_ip_fraud_score
 from tool.FileTool import read_config_json_file
 from tool.strTool import *
 from tool.proxyTool import *
@@ -28,6 +29,8 @@ class MyWindow(QWidget):
         super().__init__()
 
         # 初始化组件
+        self.get_fraud_score_btn = None
+        self.fraud_score_label = None
         self.agent_server_ip_refresh_btn = None
         self.agent_server_ip_copy_btn = None
         self.agent_server_ip_label = None
@@ -60,7 +63,10 @@ class MyWindow(QWidget):
         self.get_connection_time_content = "None（点击按钮获取）"
 
         self.agent_server_ip_label_title = "服务器IP："
-        self.agent_server_ip_label_content = "（点击按钮获取）"
+        self.agent_server_ip_label_content = "None（点击按钮获取）"
+
+        self.fraud_score_label_title = "欺诈分值："
+        self.fraud_score_label_content = "-1（点击按钮获取）"
 
         self.server_ip_position_title = "服务器地理位置："
         self.server_ip_position_content = "None None（点击按钮获取）"
@@ -88,7 +94,7 @@ class MyWindow(QWidget):
         # 窗口宽度
         self.WIDGET_WIDTH = 434
         # 窗口高度
-        self.WIDGET_HEIGHT = 201
+        self.WIDGET_HEIGHT = 257
         # 窗口默认x轴
         self.WINDOW_X = (screen_width - self.WIDGET_WIDTH) // 2
         # 窗口默认y轴
@@ -121,7 +127,8 @@ class MyWindow(QWidget):
         self.get_connection_time_btn.setIcon(QIcon(get_package_icon_path("data/image/连接时长.png")))
         self.get_connection_time_btn.clicked.connect(self.get_connection_time_fn)
 
-        self.agent_server_ip_label = QLabel(self.agent_server_ip_label_title + self.agent_server_ip_label_content, self)
+        self.agent_server_ip_label = QLabel(f"{self.agent_server_ip_label_title}{self.agent_server_ip_label_content}",
+                                            self)
         self.agent_server_ip_copy_btn = QPushButton('复制IP地址', self)
         self.agent_server_ip_copy_btn.setIcon(QIcon(get_package_icon_path("data/image/复制.png")))
         self.agent_server_ip_copy_btn.clicked.connect(self.agent_server_ip_copy_fn)
@@ -129,13 +136,20 @@ class MyWindow(QWidget):
         self.agent_server_ip_refresh_btn.setIcon(QIcon(get_package_icon_path("data/image/ipAddress.png")))
         self.agent_server_ip_refresh_btn.clicked.connect(self.agent_server_ip_refresh_fn)
 
+        self.fraud_score_label = QLabel(f"{self.fraud_score_label_title}{self.fraud_score_label_content}")
+        self.get_fraud_score_btn = QPushButton('获取欺诈分值', self)
+        fraud_score_tip = "什么是欺诈分值？<br/>欺诈分值通常是一个0到100的范围内的分数，分数越高表示越高的欺诈风险。"
+        self.get_fraud_score_btn.setToolTip(split_string_by_length(fraud_score_tip, self.TEXT_WIDTH))
+        self.get_fraud_score_btn.setIcon(QIcon(get_package_icon_path("data/image/得分.png")))
+        self.get_fraud_score_btn.clicked.connect(self.get_fraud_score_fn)
+
         self.server_ip_position_label = QLabel(self.server_ip_position_title + self.server_ip_position_content, self)
         # self.server_ip_label = QLabel(f"服务器IP: {get_target_server_ip()}", self)
         # self.server_ip_label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         self.get_server_ip_msg_btn = QPushButton('获取服务器信息', self)
         self.get_server_ip_msg_btn.setIcon(QIcon(get_package_icon_path("data/image/服务器地址.png")))
-        tip_str2 = "点击后会隐藏按钮，防止多次点击导致程序卡死，而且一开始就加载的地址的话，如果你的节点延时过高的话，启动就会很慢，而且你选的服务器和具体的位置大差不差（考虑优化）"
+        tip_str2 = "点击后会隐藏按钮，防止多次点击导致程序卡死，而且一开始就加载的地址的话，如果你的节点延时过高的话，启动就会很慢，而且你选的服务器和具体的位置大差不差"
         self.get_server_ip_msg_btn.setToolTip(split_string_by_length(tip_str2, self.TEXT_WIDTH))
         self.get_server_ip_msg_btn.clicked.connect(self.get_server_ip_msg_fn)
 
@@ -259,6 +273,12 @@ class MyWindow(QWidget):
         server_ip_x_box.addWidget(self.agent_server_ip_refresh_btn)
         y_box.addLayout(server_ip_x_box)
 
+        # 欺诈分值布局
+        fraud_score_x_box = QHBoxLayout()
+        fraud_score_x_box.addWidget(self.fraud_score_label)
+        fraud_score_x_box.addWidget(self.get_fraud_score_btn)
+        y_box.addLayout(fraud_score_x_box)
+
         # 显示地址布局
         server_ip_position_x_box = QHBoxLayout()
         server_ip_position_x_box.addWidget(self.server_ip_position_label)
@@ -357,13 +377,13 @@ class MyWindow(QWidget):
         QApplication.processEvents()
         # print("--")
         if self.agent_server_ip:
-            country, city = get_proxy_location(self.agent_server_ip)
-            self.server_ip_position_content = f"{country} {city}"
+            self.server_ip_position_content = get_proxy_location(self.agent_server_ip)
+            # self.server_ip_position_content = f"{country} {city}"
             self.server_ip_position_label.setText(self.server_ip_position_title + self.server_ip_position_content)
             self.get_server_ip_msg_btn.show()
         else:
-            self.agent_server_ip_refresh_fn()
-            self.get_server_ip_msg_fn()
+            if self.agent_server_ip_refresh_fn():
+                self.get_server_ip_msg_fn()
 
     def edit_server_info(self):
         """
@@ -411,8 +431,8 @@ class MyWindow(QWidget):
         if self.agent_server_ip:
             copy_str_and_set_btn(self.agent_server_ip, self.agent_server_ip_copy_btn)
         else:
-            self.agent_server_ip_refresh_fn()
-            self.agent_server_ip_copy_fn()
+            if self.agent_server_ip_refresh_fn():
+                self.agent_server_ip_copy_fn()
 
     def agent_server_ip_refresh_fn(self):
         """
@@ -423,7 +443,44 @@ class MyWindow(QWidget):
         QApplication.processEvents()
         self.agent_server_ip = get_target_server_ip()
         self.agent_server_ip_label_content = self.agent_server_ip
+
         self.agent_server_ip_label.setText(f"{self.agent_server_ip_label_title}{self.agent_server_ip_label_content}")
 
         self.agent_server_ip_refresh_btn.show()
         self.agent_server_ip_copy_btn.show()
+
+        if self.agent_server_ip is None:
+            return None
+
+    def get_fraud_score_fn(self):
+        self.get_fraud_score_btn.hide()
+        QApplication.processEvents()
+        if self.agent_server_ip:
+            self.fraud_score_label_content = get_curr_ip_fraud_score(self.agent_server_ip)
+            font_color = "#009A60"
+            if int(self.fraud_score_label_content) <= 20:
+                font_color = "#4AA84E"
+            elif int(self.fraud_score_label_content) <= 30:
+                font_color = "#92B73A"
+            elif int(self.fraud_score_label_content) <= 40:
+                font_color = "#C6BF22"
+            elif int(self.fraud_score_label_content) <= 50:
+                font_color = "#EDBD02"
+            elif int(self.fraud_score_label_content) <= 60:
+                font_color = "#FFAD00"
+            elif int(self.fraud_score_label_content) <= 70:
+                font_color = "#FF8C00"
+            elif int(self.fraud_score_label_content) <= 80:
+                font_color = "#FC6114"
+            elif int(self.fraud_score_label_content) <= 90:
+                font_color = "#F43021"
+            elif int(self.fraud_score_label_content) <= 100:
+                font_color = "#ED0022"
+
+            self.fraud_score_label.setText(
+                f"{self.fraud_score_label_title}"
+                f"<font color ='{font_color}'>{self.fraud_score_label_content}</font>")
+        else:
+            if self.agent_server_ip_refresh_fn():
+                self.get_fraud_score_fn()
+        self.get_fraud_score_btn.show()
