@@ -9,10 +9,7 @@ def get_agent_status():
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Internet Settings')
     proxy_enable, _ = winreg.QueryValueEx(key, 'ProxyEnable')
     winreg.CloseKey(key)
-    if proxy_enable == 1:
-        return "<span style='color:#51c259;'>开启</span>"
-    else:
-        return "<span style='color:#fc1e1e;'>关闭</span>"
+    return proxy_enable
 
 
 def set_agent_status(agent_status):

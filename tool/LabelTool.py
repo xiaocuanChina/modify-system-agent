@@ -76,3 +76,11 @@ def update_connection_time_tip_test_url():
                                f"testConnectionTimeUrl的值<br/>"
                                f"连接速度不是延迟速度，连接指的是你访问网址从加载到使用的时间")
     return test_url, get_connection_time_tip
+
+
+def set_agent_status_label():
+    agent_status = get_agent_status()
+    if agent_status:
+        return "<span style='color:#51c259;'>开启</span>"
+    else:
+        return "<span style='color:#fc1e1e;'>关闭</span>"
