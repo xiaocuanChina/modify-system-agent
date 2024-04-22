@@ -2,7 +2,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication
 
 from tool.LabelTool import set_proxy_server_info_label, \
-    set_refresh_btn_label, update_connection_time_tip_test_url
+    set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label
 from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip, \
     get_curr_ip_fraud_score
 from tool.FileTool import read_config_json_file
@@ -23,12 +23,14 @@ from tool.proxyTool import *
 """
 
 
-class MyWindow(QWidget):
+class HomePage(QWidget):
 
     def __init__(self):
         super().__init__()
 
         # 初始化组件
+        self.default_server_btn = None
+        self.start_btn = None
         self.get_fraud_score_btn = None
         self.fraud_score_label = None
         self.agent_server_ip_refresh_btn = None
@@ -80,33 +82,10 @@ class MyWindow(QWidget):
         self.proxy_server_info_str_content = f"{local_server}:{local_port}"
 
         self.agent_state_label_title = "当前代理状态："
-        self.agent_state_label_content = get_agent_status()
+        self.agent_state_label_content = set_agent_status_label()
 
-        # 获取主屏幕对象
-        screen = QGuiApplication.primaryScreen()
-        # 从主屏幕对象获取屏幕几何信息(包括屏幕分辨率)
-        screen_geometry = screen.geometry()
-        # 从屏幕几何信息中获取屏幕宽度
-        screen_width = screen_geometry.width()
-        # 从屏幕几何信息中获取屏幕高度
-        screen_height = screen_geometry.height()
-
-        # 窗口宽度
-        self.WIDGET_WIDTH = 434
-        # 窗口高度
-        self.WIDGET_HEIGHT = 257
-        # 窗口默认x轴
-        self.WINDOW_X = (screen_width - self.WIDGET_WIDTH) // 2
-        # 窗口默认y轴
-        self.WINDOW_Y = (screen_height - self.WIDGET_HEIGHT) // 2
-        # 设置标题
-        self.TITLE = '系统代理信息'
         # 文本宽度（一行数量）
         self.TEXT_WIDTH = 17
-
-        # 设置窗口的基本属性
-        self.setGeometry(self.WINDOW_X, self.WINDOW_Y, self.WIDGET_WIDTH, self.WIDGET_HEIGHT)
-        self.setWindowTitle(self.TITLE)
 
         self.initUI()
 
@@ -116,9 +95,6 @@ class MyWindow(QWidget):
         # 构建网络代理.png的绝对路径
         window_icon_path = get_package_icon_path("data/image/网络代理.png")
         self.setWindowIcon(QIcon(window_icon_path))
-
-        # 禁用最小化、最大化和关闭按钮
-        self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
 
         test_url, get_connection_time_tip = update_connection_time_tip_test_url()
         self.get_connection_time_label = QLabel(self.get_connection_time_title + self.get_connection_time_content)
@@ -133,7 +109,8 @@ class MyWindow(QWidget):
         self.agent_server_ip_copy_btn.setIcon(QIcon(get_package_icon_path("data/image/复制.png")))
         self.agent_server_ip_copy_btn.clicked.connect(self.agent_server_ip_copy_fn)
         self.agent_server_ip_refresh_btn = QPushButton('刷新IP地址', self)
-        self.agent_server_ip_refresh_btn.setIcon(QIcon(get_package_icon_path("data/image/ipAddress.png")))
+        # self.agent_server_ip_refresh_btn.setIcon(QIcon(get_package_icon_path("data/image/ipAddress.png")))
+        self.agent_server_ip_refresh_btn.setIcon(QIcon(get_package_icon_path("data/image/IP地址.png")))
         self.agent_server_ip_refresh_btn.clicked.connect(self.agent_server_ip_refresh_fn)
 
         self.fraud_score_label = QLabel(f"{self.fraud_score_label_title}{self.fraud_score_label_content}")
@@ -171,6 +148,8 @@ class MyWindow(QWidget):
         self.edit_server_btn = QPushButton('调整代理服务器', self)
         self.edit_server_btn.setIcon(QIcon(get_package_icon_path('data/image/编辑.png')))  # 替换为你的图标文件路径
         self.edit_server_btn.clicked.connect(self.edit_server_info)
+        self.default_server_btn = QPushButton("恢复为默认服务器")
+        self.default_server_btn.setIcon(QIcon(get_package_icon_path('data/image/恢复默认服务器.png')))  # 替换为你的图标文件路径
 
         # ------- 配置代理服务器 -------
         # tip_str = "输入完代理服务器地址之后<span style='color:red;'>点击刷新</span>即可自动为您配置代理服务器地址"
@@ -197,18 +176,22 @@ class MyWindow(QWidget):
         self.refresh_time = QLabel('', self)
         self.refresh_time.hide()
 
-        start_btn = QPushButton('开启代理', self)
-        start_btn.setIcon(QIcon(get_package_icon_path('data/image/开启.png')))  # 替换为你的图标文件路径
-        start_btn.clicked.connect(self.button1Clicked)
+        self.start_btn = QPushButton('开启代理', self)
+        if not get_agent_status():
+            self.start_btn.hide()
+        self.start_btn.setIcon(QIcon(get_package_icon_path('data/image/开启.png')))  # 替换为你的图标文件路径
+        self.start_btn.clicked.connect(self.enable_proxy)
 
-        stop_btn = QPushButton('关闭代理', self)
-        stop_btn.setIcon(QIcon(get_package_icon_path('data/image/关闭.png')))
-        stop_btn.clicked.connect(self.button2Clicked)
+        self.stop_btn = QPushButton('关闭代理', self)
+        if get_agent_status():
+            self.stop_btn.hide()
+        self.stop_btn.setIcon(QIcon(get_package_icon_path('data/image/关闭.png')))
+        self.stop_btn.clicked.connect(self.close_agent)
 
         # 功能按钮
         exit_btn = QPushButton('退出', self)
         exit_btn.setIcon(QIcon(get_package_icon_path('data/image/退出.png')))
-        exit_btn.clicked.connect(self.button3Clicked)
+        exit_btn.clicked.connect(lambda: QApplication.quit())
 
         self.refresh_btn = QPushButton('刷新', self)
         self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/刷新时间.png')))
@@ -255,8 +238,9 @@ class MyWindow(QWidget):
         # 代理状态布局
         agent_state_x_box = QHBoxLayout()  # 创建水平布局
         agent_state_x_box.addWidget(self.agent_state_label)
-        agent_state_x_box.addWidget(start_btn)
-        agent_state_x_box.addWidget(stop_btn)
+        agent_state_x_box.addWidget(self.start_btn)
+        agent_state_x_box.addWidget(self.stop_btn)
+        agent_state_x_box.addWidget(self.default_server_btn)
         y_box.addLayout(agent_state_x_box)
 
         # 功能按钮布局
@@ -296,16 +280,23 @@ class MyWindow(QWidget):
         # 设置窗口布局
         self.setLayout(y_box)
 
-    def button1Clicked(self):
+    def enable_proxy(self):
+        """
+        开启代理
+        """
+        self.stop_btn.show()
+        self.start_btn.hide()
         set_agent_status(True)
         self.refresh()
 
-    def button2Clicked(self):
+    def close_agent(self):
+        """
+        关闭代理
+        """
+        self.stop_btn.hide()
+        self.start_btn.show()
         set_agent_status(False)
         self.refresh()
-
-    def button3Clicked(self):
-        self.close()
 
     def refresh(self):
         """
@@ -335,7 +326,7 @@ class MyWindow(QWidget):
             self.proxy_server_info_str_title1 + self.proxy_server_info_str_content)
 
         # 刷新代理状态
-        self.agent_state_label_content = get_agent_status()
+        self.agent_state_label_content = set_agent_status_label()
         self.agent_state_label.setText(self.agent_state_label_title + self.agent_state_label_content)
 
         # 设置按钮刷新时间
