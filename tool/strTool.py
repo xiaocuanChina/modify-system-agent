@@ -76,6 +76,6 @@ def split_string_by_length(text, max_length=None):
 
 
 if __name__ == '__main__':
-    print(get_package_icon_path(""))
-    # s = "复制的代理服务器地址仅在本机使用，如果需要获取局域网内可使用的服务器ip以及端口以及ip请查看自己代理软件的配置以及对应端口"
-    # print(split_string_by_length(s, 8))
+    # print(get_package_icon_path(""))
+    s = "如需要设置默认代理服务器请执行以下步骤：<ul><li>找到文件根目录</li><li>进入data目录</li><li>修改config.json的default_proxy_server和default_proxy_proxy【：】后面的值</li></ul>"
+    print(split_string_by_length(s, 8))

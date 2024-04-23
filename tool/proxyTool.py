@@ -1,4 +1,9 @@
 import winreg
+import time
+
+import requests
+
+from tool.FileTool import read_config_json_file, verify_if_the_json_hierarchy_exists
 
 
 def get_agent_status():
@@ -91,8 +96,36 @@ def set_local_proxy_windows(server, proxy):
         return False
     return True
 
+def test_proxy_latency():
+    """
+    测试代理服务器与指定地址的延时
+    """
+    server, port = get_local_proxy_windows()
+    proxy = f"{server}:{port}"
+    file = read_config_json_file()
+    item_url = verify_if_the_json_hierarchy_exists()
+    test_url = file["testConnectionTimeUrl"]
+    if item_url:
+        test_url = item_url
+    number_of_test_delays = file["number_of_test_delays"]
+
+    latency_sum = 0
+
+    for i in range(number_of_test_delays):
+        try:
+            start_time = time.time()
+            # start_time = datetime.timestamp(datetime.now())
+            # print(f"start_time:{start_time}")
+            requests.get(test_url, proxies={"http": proxy, "https": proxy}, timeout=2.5)
+            end_time = time.time()
+            latency_sum = latency_sum + (end_time - start_time)
+            # # end_time = datetime.timestamp(datetime.now())
+            # print(f"end_time:{end_time}")
+        except Exception as e:
+            print("代理服务器 %s 测试失败: %s" % (proxy, str(e)))
+            return -1
+    return int(latency_sum / number_of_test_delays * 1000)
+
 
 if __name__ == '__main__':
-    server, port = get_local_proxy_windows()
-    item_copy_str = f"https://{server}:{port}"
-    print(item_copy_str)
+    print(get_agent_status())
