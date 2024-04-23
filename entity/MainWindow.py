@@ -1,11 +1,11 @@
 import sys
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtGui import QGuiApplication, QIcon
 from PyQt5.QtWidgets import QAction, QStackedWidget, QMainWindow, QApplication
 
-from HomePage import HomePage
-from Setting import SettingsPage
+from entity.HomePage import HomePage
+from tool.strTool import get_package_icon_path
 
 
 class MainWindow(QMainWindow):
@@ -36,6 +36,11 @@ class MainWindow(QMainWindow):
         self.setGeometry(self.WINDOW_X, self.WINDOW_Y, self.WIDGET_WIDTH, self.WIDGET_HEIGHT)
         self.setWindowTitle(self.TITLE)
 
+
+        # 构建网络代理.png的绝对路径
+        window_icon_path = get_package_icon_path("data/image/网络代理.png")
+        self.setWindowIcon(QIcon(window_icon_path))
+
         self.initUI()
 
     def initUI(self):
@@ -43,16 +48,16 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
 
         # 创建菜单栏
-        menubar = self.menuBar()
+        # menubar = self.menuBar()
 
         # 添加首页和设置菜单
-        home_menu = QAction("主页", self)
-        home_menu.triggered.connect(self.show_home_page)
-        menubar.addAction(home_menu)
-
-        settings_action = QAction("设置", self)
-        settings_action.triggered.connect(self.show_settings_page)
-        menubar.addAction(settings_action)
+        # home_menu = QAction("主页", self)
+        # home_menu.triggered.connect(self.show_home_page)
+        # menubar.addAction(home_menu)
+        #
+        # settings_action = QAction("设置", self)
+        # settings_action.triggered.connect(self.show_settings_page)
+        # menubar.addAction(settings_action)
 
         # 创建页面管理器
         self.stacked_widget = QStackedWidget()
@@ -62,8 +67,8 @@ class MainWindow(QMainWindow):
         self.home_page = HomePage()
         self.stacked_widget.addWidget(self.home_page)
 
-        self.settings_page = SettingsPage()
-        self.stacked_widget.addWidget(self.settings_page)
+        # self.settings_page = SettingsPage()
+        # self.stacked_widget.addWidget(self.settings_page)
 
     def show_settings_page(self):
         self.stacked_widget.setCurrentWidget(self.settings_page)

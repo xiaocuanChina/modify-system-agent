@@ -92,9 +92,6 @@ class HomePage(QWidget):
     # noinspection PyUnresolvedReferences
     def initUI(self):
 
-        # 构建网络代理.png的绝对路径
-        window_icon_path = get_package_icon_path("data/image/网络代理.png")
-        self.setWindowIcon(QIcon(window_icon_path))
 
         test_url, get_connection_time_tip = update_connection_time_tip_test_url()
         self.get_connection_time_label = QLabel(self.get_connection_time_title + self.get_connection_time_content)
