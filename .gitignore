@@ -4,5 +4,6 @@ test.py
 .idea
 itemFolder
 data/config.json
+data/config.conf
 tool/__pycache__/
 entity/__pycache__/
