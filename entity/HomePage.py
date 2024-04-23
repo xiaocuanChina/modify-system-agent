@@ -29,6 +29,8 @@ class HomePage(QWidget):
         super().__init__()
 
         # 初始化组件
+        self.save_proxy_server_address_btn = None
+        self.stop_btn = None
         self.default_server_btn = None
         self.start_btn = None
         self.get_fraud_score_btn = None
@@ -59,7 +61,6 @@ class HomePage(QWidget):
         # 初始化参数
         # 代理IP地址
         self.agent_server_ip = None
-        self.config_content = read_config_json_file()
 
         self.get_connection_time_title = "连接时长为："
         self.get_connection_time_content = "None（点击按钮获取）"
@@ -91,7 +92,6 @@ class HomePage(QWidget):
 
     # noinspection PyUnresolvedReferences
     def initUI(self):
-
 
         test_url, get_connection_time_tip = update_connection_time_tip_test_url()
         self.get_connection_time_label = QLabel(self.get_connection_time_title + self.get_connection_time_content)
@@ -147,6 +147,7 @@ class HomePage(QWidget):
         self.edit_server_btn.clicked.connect(self.edit_server_info)
         self.default_server_btn = QPushButton("恢复为默认服务器")
         self.default_server_btn.setIcon(QIcon(get_package_icon_path('data/image/恢复默认服务器.png')))  # 替换为你的图标文件路径
+        self.default_server_btn.clicked.connect(self.restore_to_default_server)
 
         # ------- 配置代理服务器 -------
         # tip_str = "输入完代理服务器地址之后<span style='color:red;'>点击刷新</span>即可自动为您配置代理服务器地址"
@@ -155,6 +156,9 @@ class HomePage(QWidget):
         self.separate_text_edit = QLabel(f":", self)
         self.port_text_edit = QLineEdit(self)
         self.port_text_edit.setPlaceholderText("请输入端口号")  # 设置背景文字
+        self.save_proxy_server_address_btn = QPushButton("点我保存")
+        self.save_proxy_server_address_btn.setIcon(QIcon(get_package_icon_path('data/image/保存.png')))
+        self.save_proxy_server_address_btn.clicked.connect(self.save_server_info)
 
         # self.copy_server_btn = QPushButton('复制局域网', self)
         # self.copy_server_btn.setToolTip('复制（局域网）代理服务器地址到剪贴板')
@@ -174,13 +178,13 @@ class HomePage(QWidget):
         self.refresh_time.hide()
 
         self.start_btn = QPushButton('开启代理', self)
-        if not get_agent_status():
+        if get_agent_status():
             self.start_btn.hide()
         self.start_btn.setIcon(QIcon(get_package_icon_path('data/image/开启.png')))  # 替换为你的图标文件路径
         self.start_btn.clicked.connect(self.enable_proxy)
 
         self.stop_btn = QPushButton('关闭代理', self)
-        if get_agent_status():
+        if not get_agent_status():
             self.stop_btn.hide()
         self.stop_btn.setIcon(QIcon(get_package_icon_path('data/image/关闭.png')))
         self.stop_btn.clicked.connect(self.close_agent)
@@ -203,10 +207,9 @@ class HomePage(QWidget):
             self.server_text_edit.hide()
             self.port_text_edit.hide()
             self.separate_text_edit.hide()
+            self.save_proxy_server_address_btn.hide()
         else:
             self.show_text_edit = True
-            self.refresh_btn.setText("点我保存")
-            self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/保存.png')))
             self.proxy_server_info_str_label.setText(self.proxy_server_info_str_title2)
             self.copy_server_btn.hide()
             self.edit_server_btn.hide()
@@ -229,7 +232,7 @@ class HomePage(QWidget):
         proxy_server_x_box.addWidget(self.server_text_edit)
         proxy_server_x_box.addWidget(self.separate_text_edit)
         proxy_server_x_box.addWidget(self.port_text_edit)
-
+        proxy_server_x_box.addWidget(self.save_proxy_server_address_btn)
         y_box.addLayout(proxy_server_x_box)
 
         # 代理状态布局
@@ -303,18 +306,6 @@ class HomePage(QWidget):
         self.ipv4_add_str_content = get_IPv4_path()
         self.ipv4_add_str_label.setText(self.ipv4_add_str_title + self.ipv4_add_str_content)
 
-        # 如果设置代理服务器的文本框内容不为空
-        validate_server = self.server_text_edit.text()
-        validate_port = self.port_text_edit.text()
-        if validate_server and validate_port:
-            set_local_proxy_windows(validate_server, validate_port)
-            self.server_text_edit.hide()
-            self.port_text_edit.hide()
-            self.separate_text_edit.hide()
-
-            self.copy_server_btn.show()
-            self.edit_server_btn.show()
-
         # 刷新服务器地址
         set_proxy_server_info_label(self.proxy_server_info_str_label)
         local_server, local_port = get_local_proxy_windows()
@@ -378,6 +369,7 @@ class HomePage(QWidget):
                 self.get_server_ip_msg_fn()
 
         self.get_server_ip_msg_btn.show()
+        self.refresh()
 
     def edit_server_info(self):
         """
@@ -389,6 +381,7 @@ class HomePage(QWidget):
         self.server_text_edit.show()
         self.separate_text_edit.show()
         self.port_text_edit.show()
+        self.save_proxy_server_address_btn.show()
 
         # 获取默认的代理服务器信息
         default_server, default_port = get_local_proxy_windows()
@@ -397,9 +390,48 @@ class HomePage(QWidget):
 
         # 设置在“修改服务器状态”下的显示的内容
         self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
-        self.refresh_btn.setText("点我保存")
-        self.refresh_btn.setIcon(QIcon(get_package_icon_path('data/image/保存.png')))
-        # self.proxy_server_info_str_label.setText("请设置代理服务器信息: ")
+
+    def save_server_info(self):
+        """
+        保存代理服务器
+        """
+        # 如果设置代理服务器的文本框内容不为空
+        validate_server = self.server_text_edit.text()
+        validate_port = self.port_text_edit.text()
+        if validate_server and validate_port:
+            set_local_proxy_windows(validate_server, validate_port)
+            self.server_text_edit.hide()
+            self.port_text_edit.hide()
+            self.separate_text_edit.hide()
+            self.save_proxy_server_address_btn.hide()
+
+            self.copy_server_btn.show()
+            self.edit_server_btn.show()
+
+        self.refresh()
+
+    def restore_to_default_server(self):
+        """
+        恢复默认的服务器
+        """
+        file = read_config_json_file()
+        server = file["default_proxy_server"]
+        proxy = file["default_proxy_proxy"]
+        if server and proxy:
+            set_local_proxy_windows(server, proxy)
+            self.default_server_btn.setText("已恢复默认服务器")
+            self.default_server_btn.setIcon(QIcon(get_package_icon_path('data/image/恢复默认服务器.png')))
+            self.default_server_btn.setToolTip(None)
+        else:
+            self.default_server_btn.setText("未设置默认服务器")
+            self.default_server_btn.setIcon(QIcon(get_package_icon_path('data/image/恢复默认服务器-error.png')))
+            default_server_btn_tip = ("如需要设置默认代理服务器请执行以下步骤：<br/>"
+                                      "1. 找到文件根目录<br/>"
+                                      "2. 进入data目录<br/>"
+                                      "3. 修改config.json的default_proxy_server和default_proxy_proxy【：】后面的值")
+            # print(default_server_btn_tip)
+            self.default_server_btn.setToolTip(split_string_by_length(default_server_btn_tip))
+        self.refresh()
 
     def get_connection_time_fn(self):
         """
