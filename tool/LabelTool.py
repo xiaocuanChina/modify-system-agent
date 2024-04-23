@@ -4,7 +4,7 @@ from datetime import datetime
 from PyQt5.QtGui import QIcon
 
 from tool.IPTool import get_IPv4_path
-from tool.FileTool import read_config_json_file
+from tool.FileTool import read_config_json_file, verify_if_the_json_hierarchy_exists
 from tool.proxyTool import get_local_proxy_windows, get_agent_status
 from tool.strTool import get_package_icon_path, split_string_by_length
 
@@ -60,8 +60,12 @@ def update_connection_time_tip_test_url():
     修改【测试连接时长】tip文字
     """
     config_content = read_config_json_file()
+    json_directory_address = verify_if_the_json_hierarchy_exists()
+    if json_directory_address:
+        test_url = json_directory_address
+    else:
+        test_url = config_content["testConnectionTimeUrl"]
     local_configuration_file_path = config_content["localJsonConfigurationFileURL"]
-    test_url = config_content["testConnectionTimeUrl"]
     if os.path.exists(local_configuration_file_path):
         # 将变量名解析为字典键
         key_list = config_content["localJsonConfigurationItem"].split('.')
@@ -70,11 +74,12 @@ def update_connection_time_tip_test_url():
             current_data = current_data.get(key)
         test_url = current_data
 
-    get_connection_time_tip = (f"当前检验的URL为：<br/>"
+    get_connection_time_tip = (f"连接速度<b>不是延迟速度</b><br/>"
+                               f"连接指的是你访问网址从加载到使用的时间<br/>"
+                               f"当前检验的URL为：<br/>"
                                f"{test_url}<br/>"
                                f"如需修改，请修改data目录下的config.json<br/>"
-                               f"testConnectionTimeUrl的值<br/>"
-                               f"连接速度不是延迟速度，连接指的是你访问网址从加载到使用的时间")
+                               f"testConnectionTimeUrl的值")
     return test_url, get_connection_time_tip
 
 
