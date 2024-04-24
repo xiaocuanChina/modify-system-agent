@@ -1,6 +1,11 @@
 {
   "testConnectionTimeUrl": "https://www.google.com",
-  "timeout": 2.5,
-  "localJsonConfigurationFileURL": "E:\\Program Files\\v2rayN\\guiConfigs\\guiNConfig.json",
-  "localJsonConfigurationItem": "speedTestItem.speedPingTestUrl"
+  "timeout": 5,
+  "default_proxy_server": "",
+  "default_proxy_proxy": "",
+  "number_of_test_delays": 2,
+  "localJsonConfigurationFileURL": "",
+  "localJsonConfigurationItem": "speedTestItem.speedPingTestUrl",
+  "scamalyticsuUserName": "",
+  "scamalyticsuKey": ""
 }
