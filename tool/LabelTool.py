@@ -59,26 +59,16 @@ def update_connection_time_tip_test_url():
     """
     修改【测试连接时长】tip文字
     """
-    config_content = read_config_json_file()
     json_directory_address = verify_if_the_json_hierarchy_exists()
     if json_directory_address:
         test_url = json_directory_address
     else:
+        config_content = read_config_json_file()
         test_url = config_content["testConnectionTimeUrl"]
-    local_configuration_file_path = config_content["localJsonConfigurationFileURL"]
-    if os.path.exists(local_configuration_file_path):
-        # 将变量名解析为字典键
-        key_list = config_content["localJsonConfigurationItem"].split('.')
-        current_data = read_config_json_file(local_configuration_file_path)
-        for key in key_list:
-            current_data = current_data.get(key)
-        test_url = current_data
 
     get_connection_time_tip = (f"连接速度<b>不是延迟速度</b><br/>"
                                f"连接指的是你访问网址从加载到使用的时间<br/>"
-                               f"当前检验的URL为：<br/>"
-                               f"{test_url}<br/>"
-                               f"如需修改，请修改data目录下的config.json<br/>"
+                               f"如需修改当前检验的URL，请修改data目录下的config.json<br/>"
                                f"testConnectionTimeUrl的值")
     return test_url, get_connection_time_tip
 
@@ -116,5 +106,18 @@ def fraud_score_font_color(score):
     elif int(score) <= 90:
         font_color = "#F43021"
     elif int(score) <= 100:
+        font_color = "#ED0022"
+    return font_color
+
+
+def delayed_font_color(latency_avg):
+    """
+    绘制延时的字体颜色
+    """
+    if 0 < latency_avg < 500:
+        font_color = "#009A60"
+    elif 0 < latency_avg < 900:
+        font_color = "#FF8C00"
+    else:
         font_color = "#ED0022"
     return font_color

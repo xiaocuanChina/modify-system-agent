@@ -6,7 +6,7 @@ import requests
 import geoip2.database
 
 from tool.FileTool import read_config_json_file
-from tool.proxyTool import get_local_proxy_windows, get_proxies
+from tool.proxyTool import get_proxies
 
 
 def get_IPv4_path():

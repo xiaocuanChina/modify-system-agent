@@ -1,6 +1,7 @@
 import sys
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QGuiApplication, QIcon
 from PyQt5.QtWidgets import QAction, QStackedWidget, QMainWindow, QApplication
 
@@ -13,6 +14,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # 获取主屏幕对象
+        self.home_page = None
         screen = QGuiApplication.primaryScreen()
         # 从主屏幕对象获取屏幕几何信息(包括屏幕分辨率)
         screen_geometry = screen.geometry()
@@ -35,7 +37,6 @@ class MainWindow(QMainWindow):
         # 设置窗口的基本属性
         self.setGeometry(self.WINDOW_X, self.WINDOW_Y, self.WIDGET_WIDTH, self.WIDGET_HEIGHT)
         self.setWindowTitle(self.TITLE)
-
 
         # 构建网络代理.png的绝对路径
         window_icon_path = get_package_icon_path("data/image/网络代理.png")
@@ -66,9 +67,20 @@ class MainWindow(QMainWindow):
         # 添加首页和设置页面
         self.home_page = HomePage()
         self.stacked_widget.addWidget(self.home_page)
+        # 将HomePage的信号连接到MainWindow的槽
+        self.home_page.setWindowTopSignal.connect(self.set_window_top)
 
         # self.settings_page = SettingsPage()
         # self.stacked_widget.addWidget(self.settings_page)
+
+    def set_window_top(self):
+        # 设置窗口置顶
+        flags = self.windowFlags()
+        if flags & Qt.WindowStaysOnTopHint:
+            self.setWindowFlags(flags & ~Qt.WindowStaysOnTopHint)
+        else:
+            self.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
+        self.show()
 
     def show_settings_page(self):
         self.stacked_widget.setCurrentWidget(self.settings_page)

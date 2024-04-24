@@ -113,30 +113,48 @@ def set_local_proxy_windows(server, proxy):
 def test_proxy_latency():
     """
     测试代理服务器与指定地址的延时
+    return:
+        latency_avg: 平均延时
+        latency_statistics: 统计信息
     """
     file = read_config_json_file()
     item_url = verify_if_the_json_hierarchy_exists()
-    test_url = file["testConnectionTimeUrl"]
     if item_url:
         test_url = item_url
+    else:
+        test_url = file["testConnectionTimeUrl"]
     number_of_test_delays = file["number_of_test_delays"]
+    timeout = file["timeout"]
 
     latency_sum = 0
+    latency_statistics = ""
 
     for i in range(number_of_test_delays):
         try:
             start_time = time.time()
             # start_time = datetime.timestamp(datetime.now())
             # print(f"start_time:{start_time}")
-            requests.get(test_url, proxies=get_proxies(), timeout=2.5)
+            requests.get(test_url, proxies=get_proxies(), timeout=timeout)
             end_time = time.time()
             latency_sum = latency_sum + (end_time - start_time)
             # # end_time = datetime.timestamp(datetime.now())
             # print(f"end_time:{end_time}")
+            latency_avg = int((end_time - start_time) * 1000)
+            if 0 < latency_avg < 500:
+                font_color = "#009A60"
+            elif 0 < latency_avg < 800:
+                font_color = "#FF8C00"
+            else:
+                font_color = "#ED0022"
+            # font_color = "#a0a0a0"
+            latency_statistics += f"{i + 1}:<font color='{font_color}'>{latency_avg} ms</font><br/>"
         except Exception as e:
-            print(f"代理服务器 测试失败: {str(e)}")
-            return -1
-    return int(latency_sum / number_of_test_delays * 1000)
+            print(f"测试失败: {str(e)}")
+            latency_statistics += f"{i + 1}:<font color='#ED0022'>-1 ms</font><br/>"
+            return -1, latency_statistics
+
+    latency_avg = int(latency_sum / number_of_test_delays * 1000)
+    return latency_avg, latency_statistics
 
 
 if __name__ == '__main__':

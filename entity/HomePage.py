@@ -1,11 +1,11 @@
-from PyQt5 import QtCore
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication
 
 from tool.LabelTool import set_proxy_server_info_label, \
-    set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label, fraud_score_font_color
+    set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label, fraud_score_font_color, \
+    delayed_font_color
 from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip, \
     get_curr_ip_fraud_score, get_curr_ip_fraud_score_use_api
-from tool.FileTool import read_config_json_file
 from tool.strTool import *
 from tool.proxyTool import *
 
@@ -24,11 +24,17 @@ from tool.proxyTool import *
 
 
 class HomePage(QWidget):
+    # 定义一个信号
+    setWindowTopSignal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
 
         # 初始化组件
+        self.current_speed_url_btn = None
+        self.current_speed_url_label = None
+        self.delay_detection_btn = None
+        self.delay_detection_label = None
         self.save_proxy_server_address_btn = None
         self.stop_btn = None
         self.default_server_btn = None
@@ -62,17 +68,19 @@ class HomePage(QWidget):
         # 代理IP地址
         self.agent_server_ip = None
 
+        default_content = "None（点击按钮获取）"
+
         self.get_connection_time_title = "连接时长为："
-        self.get_connection_time_content = "None（点击按钮获取）"
+        self.get_connection_time_content = default_content
 
         self.agent_server_ip_label_title = "服务器IP："
-        self.agent_server_ip_label_content = "None（点击按钮获取）"
+        self.agent_server_ip_label_content = default_content
 
         self.fraud_score_label_title = "欺诈分值："
-        self.fraud_score_label_content = "-1（点击按钮获取）"
+        self.fraud_score_label_content = default_content
 
         self.server_ip_position_title = "服务器地理位置："
-        self.server_ip_position_content = "None None（点击按钮获取）"
+        self.server_ip_position_content = default_content
 
         self.ipv4_add_str_title = "本机IPv4地址："
         self.ipv4_add_str_content = get_IPv4_path()
@@ -85,13 +93,31 @@ class HomePage(QWidget):
         self.agent_state_label_title = "当前代理状态："
         self.agent_state_label_content = set_agent_status_label()
 
+        self.delay_detection_label_title = "检测延时："
+        self.delay_detection_label_content = default_content
+
+        self.current_speed_url_label_title = "当前测试的URL为："
+        self.current_speed_url_label_content = verify_if_the_json_hierarchy_exists()
+
         # 文本宽度（一行数量）
         self.TEXT_WIDTH = 17
 
         self.initUI()
 
-    # noinspection PyUnresolvedReferences
     def initUI(self):
+        self.current_speed_url_label = QLabel(
+            f"{self.current_speed_url_label_title}{self.current_speed_url_label_content}")
+        self.current_speed_url_btn = QPushButton("占位按钮")
+        self.current_speed_url_btn.hide()
+
+        self.delay_detection_label = QLabel(self.delay_detection_label_title + self.delay_detection_label_content)
+        self.delay_detection_btn = QPushButton("延时检测")
+        delay_detection_tip = ("可以在同目录的data文件夹<br/>"
+                               "修改其中config.json的timeout<br/>"
+                               "来设置超时时间")
+        self.delay_detection_btn.setToolTip(delay_detection_tip)
+        self.delay_detection_btn.setIcon(QIcon(get_package_icon_path("data/image/测速.png")))
+        self.delay_detection_btn.clicked.connect(self.delay_detection_fn)
 
         test_url, get_connection_time_tip = update_connection_time_tip_test_url()
         self.get_connection_time_label = QLabel(self.get_connection_time_title + self.get_connection_time_content)
@@ -243,12 +269,19 @@ class HomePage(QWidget):
         agent_state_x_box.addWidget(self.default_server_btn)
         y_box.addLayout(agent_state_x_box)
 
+        # 当前测速URL地址
+        current_speed_url_x_box = QHBoxLayout()
+        current_speed_url_x_box.addWidget(self.current_speed_url_label)
+        current_speed_url_x_box.addWidget(self.current_speed_url_btn)
+        y_box.addLayout(current_speed_url_x_box)
+
         # 功能按钮布局
         function_but_x_box = QHBoxLayout()  # 创建水平布局
         function_but_x_box.addWidget(self.windows_top_btn)
         function_but_x_box.addWidget(self.refresh_btn)
         function_but_x_box.addWidget(exit_btn)
         y_box.addLayout(function_but_x_box)
+
 
         # 显示IP布局
         server_ip_x_box = QHBoxLayout()
@@ -257,17 +290,23 @@ class HomePage(QWidget):
         server_ip_x_box.addWidget(self.agent_server_ip_refresh_btn)
         y_box.addLayout(server_ip_x_box)
 
-        # 欺诈分值布局
-        fraud_score_x_box = QHBoxLayout()
-        fraud_score_x_box.addWidget(self.fraud_score_label)
-        fraud_score_x_box.addWidget(self.get_fraud_score_btn)
-        y_box.addLayout(fraud_score_x_box)
+        # 延时检测布局
+        delay_detection_x_box = QHBoxLayout()
+        delay_detection_x_box.addWidget(self.delay_detection_label)
+        delay_detection_x_box.addWidget(self.delay_detection_btn)
+        y_box.addLayout(delay_detection_x_box)
 
         # 显示地址布局
         server_ip_position_x_box = QHBoxLayout()
         server_ip_position_x_box.addWidget(self.server_ip_position_label)
         server_ip_position_x_box.addWidget(self.get_server_ip_msg_btn)
         y_box.addLayout(server_ip_position_x_box)
+
+        # 欺诈分值布局
+        fraud_score_x_box = QHBoxLayout()
+        fraud_score_x_box.addWidget(self.fraud_score_label)
+        fraud_score_x_box.addWidget(self.get_fraud_score_btn)
+        y_box.addLayout(fraud_score_x_box)
 
         # 获取连接时长的布局
         connection_time_x_box = QHBoxLayout()
@@ -320,22 +359,29 @@ class HomePage(QWidget):
         # 设置按钮刷新时间
         set_refresh_btn_label(self.refresh_btn)
 
+        # 刷新配置文件中的测试URL地址
+        self.current_speed_url_label_content = verify_if_the_json_hierarchy_exists()
+        self.current_speed_url_label.setText(
+            f"{self.current_speed_url_label_title}{self.current_speed_url_label_content}")
+
     def set_windows_top(self):
         """
         设置窗口置顶
         :return:
         """
+        # 触发设置窗口置顶的信号
+        self.setWindowTopSignal.emit()
         # 获取窗口标志
         flags = self.windowFlags()
 
         # 检查窗口是否置顶
-        if flags & QtCore.Qt.WindowStaysOnTopHint:
-            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint, False)
+        if flags & Qt.WindowStaysOnTopHint:
+            self.setWindowFlags(self.windowFlags() & ~Qt.WindowStaysOnTopHint)
             self.windows_top_btn.setIcon(QIcon(get_package_icon_path('data/image/置顶-false.png')))
         else:
-            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
             self.windows_top_btn.setIcon(QIcon(get_package_icon_path('data/image/置顶-true.png')))
-        self.show()
+        # self.show()
 
     def copy_proxy_server_address(self):
         """
@@ -510,3 +556,17 @@ class HomePage(QWidget):
             if self.agent_server_ip:
                 self.get_fraud_score_fn()
         self.get_fraud_score_btn.show()
+
+    def delay_detection_fn(self):
+        """
+        检测延时的方法
+        """
+        self.delay_detection_btn.hide()
+        QApplication.processEvents()
+        latency_avg, latency_statistics = test_proxy_latency()
+        font_color = delayed_font_color(latency_avg)
+        self.delay_detection_label_content = f"<font color='{font_color}'>{latency_avg} ms</font>"
+        self.delay_detection_label.setText(f"{self.delay_detection_label_title}{self.delay_detection_label_content}")
+        self.delay_detection_btn.setToolTip(str(latency_statistics))
+
+        self.delay_detection_btn.show()
