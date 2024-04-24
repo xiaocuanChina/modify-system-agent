@@ -84,8 +84,37 @@ def update_connection_time_tip_test_url():
 
 
 def set_agent_status_label():
+    """
+    设置代理状态文字颜色
+    """
     agent_status = get_agent_status()
     if agent_status:
         return "<span style='color:#51c259;'>开启</span>"
     else:
         return "<span style='color:#fc1e1e;'>关闭</span>"
+
+
+def fraud_score_font_color(score):
+    """
+    设置欺诈分数的颜色
+    """
+    font_color = "#009A60"
+    if int(score) <= 20:
+        font_color = "#4AA84E"
+    elif int(score) <= 30:
+        font_color = "#92B73A"
+    elif int(score) <= 40:
+        font_color = "#C6BF22"
+    elif int(score) <= 50:
+        font_color = "#EDBD02"
+    elif int(score) <= 60:
+        font_color = "#FFAD00"
+    elif int(score) <= 70:
+        font_color = "#FF8C00"
+    elif int(score) <= 80:
+        font_color = "#FC6114"
+    elif int(score) <= 90:
+        font_color = "#F43021"
+    elif int(score) <= 100:
+        font_color = "#ED0022"
+    return font_color

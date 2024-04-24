@@ -6,7 +6,7 @@ import requests
 import geoip2.database
 
 from tool.FileTool import read_config_json_file
-from tool.proxyTool import get_local_proxy_windows
+from tool.proxyTool import get_local_proxy_windows, get_proxies
 
 
 def get_IPv4_path():
@@ -27,19 +27,12 @@ def get_target_server_ip():
     获取当前代理IP
     return: 127.0.*.*这样的ip地址
     """
-    server, port = get_local_proxy_windows()
-    # 代理服务器地址
-    proxy_url = f"{server}:{port}"
     # 目标服务器地址
     target_url = 'https://httpbin.org/ip'
-    proxies = {
-        'http': proxy_url,
-        'https': proxy_url
-    }
     try:
         config_json = read_config_json_file()
         timeout = config_json["timeout"]
-        response = requests.get(target_url, proxies=proxies, timeout=timeout)
+        response = requests.get(target_url, proxies=get_proxies(), timeout=timeout)
         # 从响应中获取目标服务器的 IP 地址
         target_ip = response.json()['origin']
         return target_ip
@@ -94,7 +87,7 @@ def get_connection_time(url):
     try:
         config_json = read_config_json_file()
         timeout = config_json["timeout"]
-        response = requests.get(url, timeout=timeout)
+        response = requests.get(url, proxies=get_proxies(), timeout=timeout)
         return f"{(response.elapsed.total_seconds() * 1000):.2f}"  # 将响应时间转换为毫秒
     except requests.exceptions.RequestException as e:
         return -1
@@ -103,12 +96,14 @@ def get_connection_time(url):
 def get_curr_ip_fraud_score(ip):
     """
     获得IP的欺诈分值
+
+    IP就要从参数中传，速度会快一点
     """
     url = f'https://scamalytics.com/ip/{ip}'
 
     config_json = read_config_json_file()
     timeout = config_json["timeout"]
-    response = requests.get(url, timeout=timeout)
+    response = requests.get(url, proxies=get_proxies(), timeout=timeout)
 
     if response.status_code == 200:
         # 使用正则表达式匹配Fraud Score的分数部分
@@ -119,13 +114,32 @@ def get_curr_ip_fraud_score(ip):
     return -1
 
 
-if __name__ == '__main__':
-    print(get_proxy_location("104.28.156.115", "../data/GeoLite2-City.mmdb"))
+def get_curr_ip_fraud_score_use_api(username, key, ip):
+    """
+    使用官方api获取欺诈分值
+    IP就要从参数中传，速度会快一点
 
-    # target_url = 'https://chat.openai.com/c/8a31e7d8-437a-48af-a836-8eacea680fb5'
-    # latency = get_connection_time(target_url)
-    # if latency is not None:
-    #     print(f"连接到 {target_url} 大约需要 {latency} 毫秒")
-    # else:
-    #     print(f"无法获取到 {target_url} 的延迟")
-    # print(get_curr_ip_fraud_score())
+    return:
+        score：欺诈分数
+        remaining：剩余额度
+    """
+    url = f"https://api11.scamalytics.com/{username}/?key={key}&ip={ip}"
+
+    config_json = read_config_json_file()
+    timeout = config_json["timeout"]
+    # 主要是查询ip的数据，因此这里不需要启动代理
+    response = requests.get(url, timeout=timeout)
+    json = response.json()
+    # 分数
+    score = json["score"]
+    credits = json["credits"]
+    # 已使用
+    used = credits["used"]
+    # 剩余额度
+    remaining = credits["remaining"]
+
+    return score, remaining
+
+
+if __name__ == '__main__':
+    get_curr_ip_fraud_score_use_api("18175931941", "d549482711fe87378bfd13225da384ed15e1e2aee0a2396651b749527d65787d")

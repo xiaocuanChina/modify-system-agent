@@ -2,9 +2,9 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication
 
 from tool.LabelTool import set_proxy_server_info_label, \
-    set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label
+    set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label, fraud_score_font_color
 from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip, \
-    get_curr_ip_fraud_score
+    get_curr_ip_fraud_score, get_curr_ip_fraud_score_use_api
 from tool.FileTool import read_config_json_file
 from tool.strTool import *
 from tool.proxyTool import *
@@ -488,30 +488,23 @@ class HomePage(QWidget):
         self.get_fraud_score_btn.hide()
         QApplication.processEvents()
         if self.agent_server_ip:
-            self.fraud_score_label_content = get_curr_ip_fraud_score(self.agent_server_ip)
-            font_color = "#009A60"
-            if int(self.fraud_score_label_content) <= 20:
-                font_color = "#4AA84E"
-            elif int(self.fraud_score_label_content) <= 30:
-                font_color = "#92B73A"
-            elif int(self.fraud_score_label_content) <= 40:
-                font_color = "#C6BF22"
-            elif int(self.fraud_score_label_content) <= 50:
-                font_color = "#EDBD02"
-            elif int(self.fraud_score_label_content) <= 60:
-                font_color = "#FFAD00"
-            elif int(self.fraud_score_label_content) <= 70:
-                font_color = "#FF8C00"
-            elif int(self.fraud_score_label_content) <= 80:
-                font_color = "#FC6114"
-            elif int(self.fraud_score_label_content) <= 90:
-                font_color = "#F43021"
-            elif int(self.fraud_score_label_content) <= 100:
-                font_color = "#ED0022"
+            config_file = read_config_json_file()
+            username = config_file["scamalyticsuUserName"]
+            key = config_file["scamalyticsuKey"]
+            remaining = ""
+            if username and key:
+                score, remaining = get_curr_ip_fraud_score_use_api(username, key, self.agent_server_ip)
+                self.fraud_score_label_content = score
+                font_color = fraud_score_font_color(self.fraud_score_label_content)
+                self.fraud_score_label_content = (f"<font color ='{font_color}'>{self.fraud_score_label_content}</font>"
+                                                  f"（剩余测试额度：{remaining}）")
+            else:
+                self.fraud_score_label_content = get_curr_ip_fraud_score(self.agent_server_ip)
+                font_color = fraud_score_font_color(self.fraud_score_label_content)
+                self.fraud_score_label_content = f"<font color ='{font_color}'>{self.fraud_score_label_content}</font>"
 
-            self.fraud_score_label.setText(
-                f"{self.fraud_score_label_title}"
-                f"<font color ='{font_color}'>{self.fraud_score_label_content}</font>")
+            self.fraud_score_label.setText(f"{self.fraud_score_label_title}"
+                                           f"{self.fraud_score_label_content}</font>")
         else:
             self.agent_server_ip_refresh_fn()
             if self.agent_server_ip:
