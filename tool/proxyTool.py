@@ -39,6 +39,19 @@ def set_agent_status(agent_status):
     return get_agent_status()
 
 
+def get_proxies():
+    """
+    用于网络请求时的代理服务器
+    """
+    server, port = get_local_proxy_windows()
+    # 代理服务器地址
+    proxy_url = f"{server}:{port}"
+    return {
+        'http': proxy_url,
+        'https': proxy_url
+    }
+
+
 def get_local_proxy_windows():
     """
     获取本地使用的代理服务器 IP 和端口 (Windows)
@@ -96,12 +109,11 @@ def set_local_proxy_windows(server, proxy):
         return False
     return True
 
+
 def test_proxy_latency():
     """
     测试代理服务器与指定地址的延时
     """
-    server, port = get_local_proxy_windows()
-    proxy = f"{server}:{port}"
     file = read_config_json_file()
     item_url = verify_if_the_json_hierarchy_exists()
     test_url = file["testConnectionTimeUrl"]
@@ -116,13 +128,13 @@ def test_proxy_latency():
             start_time = time.time()
             # start_time = datetime.timestamp(datetime.now())
             # print(f"start_time:{start_time}")
-            requests.get(test_url, proxies={"http": proxy, "https": proxy}, timeout=2.5)
+            requests.get(test_url, proxies=get_proxies(), timeout=2.5)
             end_time = time.time()
             latency_sum = latency_sum + (end_time - start_time)
             # # end_time = datetime.timestamp(datetime.now())
             # print(f"end_time:{end_time}")
         except Exception as e:
-            print("代理服务器 %s 测试失败: %s" % (proxy, str(e)))
+            print(f"代理服务器 测试失败: {str(e)}")
             return -1
     return int(latency_sum / number_of_test_delays * 1000)
 
