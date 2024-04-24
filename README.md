@@ -39,11 +39,6 @@
 
 
 
-# 至暗时刻
-![Clip_2024-04-15_17-25-09](https://github.com/xiaocuanChina/view-system-agents-2.0/assets/113506112/d8a8c2aa-5a0c-411a-b342-e7f3e2388902)
-头大，因为自己的疏忽，导致代码没了，这个是源库的备份版本，以后只更新这个版本，原版本等我的账号被取消标记之后再删库把
-
-
 
 # 页面
 ![Clip_2024-04-19_16-04-27](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/2dac13e9-4373-4ace-b9f6-731448dede52)
@@ -87,25 +82,24 @@
     >
     > 通过py截取https://scamalytics.com/ip/{ip}页面的Fraud Score元素来获取分数
     >
-    > 现在已经向官方发送申请API的邮件
+    > 现在已经拥有了官方API了，每月5000的额度，如果有需要申请官方API的[点我直达](https://scamalytics.com/ip/api/enquiry?monthly_api_calls=5000)
+    >
+    > 因为官方API的每月额度有限，目前不考虑提供我自己的API，需要的可以自己申请使用
     >
     > 如通过py直接获取网页的信息不符合网站条款的话的请联系我，我会删除相关代码
     >
-    > 在API成功申请到之后我也会修改相关代码
-    >
     > ---
     >
-    > Currently using scamalytics
-    > Getting the score by intercepting the Fraud Score element of the https://scamalytics.com/ip/{ip} page via py
-    > I've already sent the API request email to the official website.
-    > If it is not in accordance with the terms and conditions of the website, please contact me and I will remove the code.
-    > I will also change the code after the API is successfully applied.
-    >
+    > Get the score by intercepting the Fraud Score element of the https://scamalytics.com/ip/{ip} page via py
+    > Now we have the official API, the monthly quota of 5000, if there is a need to apply for the official API point me directly to the
+    > Because of the limited monthly quota of the official API, I do not consider providing my own API, if you need to apply for their own use of
+    > If the information on the web page is not in accordance with the terms and conditions of the website, please contact me, I will delete the relevant code.
     > 
-
-    评估节点安全状态的一种指标
-
-    如果你需要输入一些隐私的内容，你可以通过这个检测该节点是否安全，分数越低越安全
+    >
+    
+评估节点安全状态的一种指标
+    
+如果你需要输入一些隐私的内容，你可以通过这个检测该节点是否安全，分数越低越安全
 
 
 
