@@ -12,7 +12,7 @@
 
 # GeoLite2-City.mmdb更新
 
-> 当前使用的版本：GeoLite2-City_20240416.tar.gz（周二）
+> 当前使用的版本：GeoLite2-City_20240423.tar.gz（周二）
 >
 > 需要下载的为：GeoLite2 City
 
@@ -24,7 +24,7 @@
 
 ## 方法2
 
-1. ***登录***获取自己的[许可证](https://www.maxmind.com/en/accounts/current/license-key)
+1. 登录获取自己的[许可证](https://www.maxmind.com/en/accounts/current/license-key)
 2. 创建自己的许可证，并获取GeoIP.conf文件
 3. 点击[永久下载地址](https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz)
 4. 输入GeoIP.conf中的AccountID和LicenseKey
@@ -76,29 +76,56 @@
 
 - 欺诈分值
 
+    申请API是可选操作，只要目前scamalytics还未对我发出警告，就可以不使用API
+    
     > 目前使用的是[scamalytics](https://scamalytics.com/)
+    >
+    > - ***通过py截取https://scamalytics.com/ip/{ip}页面的Fraud Score元素来获取分数***
+    > - ***如通过py直接获取网页的信息不符合网站条款的话的请联系我，我会删除相关代码***
     >
     > ![](https://scamalytics.com/wp-content/uploads/2016/06/Scamalytics-Logo-No-Strapline-Transparent-738x150.png)
     >
-    > 通过py截取https://scamalytics.com/ip/{ip}页面的Fraud Score元素来获取分数
+    > 
     >
-    > 现在已经拥有了官方API了，每月5000的额度，如果有需要申请官方API的[点我直达](https://scamalytics.com/ip/api/enquiry?monthly_api_calls=5000)
+    > - 现在我已经拥有了官方API了，每月5000的额度
+    >     - 因为官方API的每月额度有限，目前不考虑提供我自己的API，需要的可以自己上官网[申请使用
     >
-    > 因为官方API的每月额度有限，目前不考虑提供我自己的API，需要的可以自己申请使用
+    > - 在申请成功之后查看自己的连接
     >
-    > 如通过py直接获取网页的信息不符合网站条款的话的请联系我，我会删除相关代码
+    >     - 先阅读官方发的邮箱内容，其中带API文档附件，官方的免费服务不提供技术支持
+    >
+    >     - api请求格式如下
+    >
+    >         - https://<hostname>/<username>/?ip=<ip>&key=<key>
+    >
+    >         - 仅需复制username和key到config.json文件即（详情配置见【config.json】，就在这个README文件下面有解释）
     >
     > ---
     >
-    > Get the score by intercepting the Fraud Score element of the https://scamalytics.com/ip/{ip} page via py
-    > Now we have the official API, the monthly quota of 5000, if there is a need to apply for the official API point me directly to the
-    > Because of the limited monthly quota of the official API, I do not consider providing my own API, if you need to apply for their own use of
-    > If the information on the web page is not in accordance with the terms and conditions of the website, please contact me, I will delete the relevant code.
+    > - ***Get the score by intercepting the Fraud Score element of the https://scamalytics.com/ip/{ip} page via py***
+    >
+    > - ***If you do not comply with the terms and conditions of the website, please contact me, I will remove the code.***
+    >
+    > 
+    >
+    > - Now I have the official API, the monthly quota of 5000
+    >     - Because of the limited monthly quota of the official API, I don't consider providing my own API at the moment, if you need it, you can go to the official website [apply for use](https://scamalytics.com/ip/api/enquiry?monthly_api_calls=5000).
+    >
+    > - Check your connection after successful application
+    >
+    >     - First read the official email content, which is attached with the API document, the official free service does not provide technical support
+    >
+    >     - The api request format is as follows
+    >
+    >         - https://<hostname>/<username>/?ip=<ip>&key=<key>
+    >
+    >         - just copy the username and key to the config.json file that is (details of the configuration see [config.json], in this README file below the explanation)
+    >
     > 
     >
     
+
 评估节点安全状态的一种指标
-    
 如果你需要输入一些隐私的内容，你可以通过这个检测该节点是否安全，分数越低越安全
 
 
@@ -129,6 +156,18 @@
 
     - 连接时长超时时长设置
 
+- default_proxy_server
+
+    -  默认服务器地址
+
+- default_proxy_proxy
+
+    -  默认的服务器端口
+
+- number_of_test_delays
+
+    -  延时检测次数
+
 - localJsonConfigurationFileURL
 
     > 读取配置文件的作用是使代理检测地址和测试连接时长的路径一致，
@@ -138,4 +177,12 @@
 - localJsonConfigurationItem
 
     - json文件的key路径（如果localJsonConfigurationFileURL配置了，这个也需要配置）
+
+- scamalyticsuUserName
+
+    -  用于检测欺诈分值API（详情见【页面】-【欺诈分值】）的用户名
+
+- scamalyticsuKey
+
+    -  用于检测欺诈分值API（详情见【页面】-【欺诈分值】）的key
 
