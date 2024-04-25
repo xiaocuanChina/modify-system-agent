@@ -93,7 +93,7 @@ class HomePage(QWidget):
         self.agent_state_label_title = "当前代理状态："
         self.agent_state_label_content = set_agent_status_label()
 
-        self.delay_detection_label_title = "检测延时："
+        self.delay_detection_label_title = "检测平均延时："
         self.delay_detection_label_content = default_content
 
         self.current_speed_url_label_title = "当前测试的URL为："
