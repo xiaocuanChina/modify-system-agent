@@ -312,7 +312,8 @@ class HomePage(QWidget):
         connection_time_x_box = QHBoxLayout()
         connection_time_x_box.addWidget(self.get_connection_time_label)
         connection_time_x_box.addWidget(self.get_connection_time_btn)
-        y_box.addLayout(connection_time_x_box)
+        # 检测单次延时
+        # y_box.addLayout(connection_time_x_box)
 
         # y_box.addWidget(self.get_server_ip_msg_btn)
 
