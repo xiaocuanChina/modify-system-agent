@@ -125,6 +125,7 @@ def test_proxy_latency():
         test_url = file["testConnectionTimeUrl"]
     number_of_test_delays = file["number_of_test_delays"]
     timeout = file["timeout"]
+    # print(timeout)
 
     latency_sum = 0
     latency_statistics = ""

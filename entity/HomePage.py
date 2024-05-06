@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication, QFileDialog
 
 from tool.LabelTool import set_proxy_server_info_label, \
     set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label, fraud_score_font_color, \
@@ -31,6 +31,10 @@ class HomePage(QWidget):
         super().__init__()
 
         # 初始化组件
+        self.replace_node_name_edit_new = None
+        self.replace_node_name_edit_old = None
+        self.replace_node_name_label = None
+        self.replace_node_name_btn = None
         self.current_speed_url_btn = None
         self.current_speed_url_label = None
         self.delay_detection_btn = None
@@ -105,6 +109,18 @@ class HomePage(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.replace_node_name_label = QLabel("批量替换节点名称：")
+        self.replace_node_name_edit_old = QLineEdit()
+        self.replace_node_name_edit_old.setPlaceholderText("被替换的文字")
+        self.replace_node_name_edit_new = QLineEdit()
+        self.replace_node_name_edit_new.setPlaceholderText("替换后的文字")
+        self.replace_node_name_btn = QPushButton("选择文件")
+        replace_node_name_tip = ("文件中的内容需要是节点服务器信息，节点服务器需要一行一个<br>"
+                                 "如果文件不是按行分的话会解析失败")
+        # self.replace_node_name_btn.setToolTip(split_string_by_length(replace_node_name_tip, self.TEXT_WIDTH))
+        self.replace_node_name_btn.setToolTip(replace_node_name_tip)
+        self.replace_node_name_btn.clicked.connect(self.replace_node_name_fn)
+
         self.current_speed_url_label = QLabel(
             f"{self.current_speed_url_label_title}{self.current_speed_url_label_content}")
         self.current_speed_url_btn = QPushButton("占位按钮")
@@ -282,7 +298,6 @@ class HomePage(QWidget):
         function_but_x_box.addWidget(exit_btn)
         y_box.addLayout(function_but_x_box)
 
-
         # 显示IP布局
         server_ip_x_box = QHBoxLayout()
         server_ip_x_box.addWidget(self.agent_server_ip_label)
@@ -312,10 +327,15 @@ class HomePage(QWidget):
         connection_time_x_box = QHBoxLayout()
         connection_time_x_box.addWidget(self.get_connection_time_label)
         connection_time_x_box.addWidget(self.get_connection_time_btn)
-        # 检测单次延时
+        # 检测单次延时（和检测平均延时是一样的，先屏蔽，后修改）
         # y_box.addLayout(connection_time_x_box)
 
-        # y_box.addWidget(self.get_server_ip_msg_btn)
+        replace_node_name_x_box = QHBoxLayout()
+        replace_node_name_x_box.addWidget(self.replace_node_name_label)
+        replace_node_name_x_box.addWidget(self.replace_node_name_edit_old)
+        replace_node_name_x_box.addWidget(self.replace_node_name_edit_new)
+        replace_node_name_x_box.addWidget(self.replace_node_name_btn)
+        y_box.addLayout(replace_node_name_x_box)
 
         # 设置窗口布局
         self.setLayout(y_box)
@@ -571,3 +591,10 @@ class HomePage(QWidget):
         self.delay_detection_btn.setToolTip(str(latency_statistics))
 
         self.delay_detection_btn.show()
+
+    def replace_node_name_fn(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "选择文件")
+        replace_text = self.replace_node_name_edit_old.text()
+        replacement_content = self.replace_node_name_edit_new.text()
+        main_update(file_path, replace_text, replacement_content)
+        self.replace_node_name_btn.setText("已将服务器复制到粘贴板")

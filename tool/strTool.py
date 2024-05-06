@@ -1,8 +1,12 @@
 import os
 import re
 import sys
+import base64
+import json
+from urllib.parse import quote
 
-from PyQt5.QtGui import QGuiApplication, QIcon
+import pyperclip
+from PyQt5.QtGui import QIcon
 
 
 def get_package_icon_path(path):
@@ -34,10 +38,8 @@ def copy_str_and_set_btn(s, my_btn):
     :param my_btn: 按钮对象
     :return: None
     """
-    # 获取剪贴板实例
-    clipboard = QGuiApplication.clipboard()
-    # 设置剪贴板内容
-    clipboard.setText(s)
+    # 将字符串复制到剪贴板
+    pyperclip.copy(s)
     # 更新复制按钮的文本和图标
     my_btn.setText("复制成功")
     my_btn.setIcon(QIcon(get_package_icon_path('data/image/成功.png')))
@@ -73,6 +75,60 @@ def split_string_by_length(text, max_length=None):
         # return '<br/>'.join(result)
     else:
         return text
+
+
+def update_source_vmess(replace_text, vmess_info, replacement_content=""):
+    """
+    解析并替换vmess服务器地址
+    :param replace_text: 需要被替换的文本（旧）
+    :param vmess_info: 服务器地址
+    :param replacement_content: 替换的内容（新）
+    :return:
+    """
+    # 进行Base64解码
+    decoded_info = base64.urlsafe_b64decode(vmess_info[len("vmess://"):]).decode('utf-8')
+    # 解析JSON格式
+    vmess_data = json.loads(decoded_info)
+    # 修改服务器地址和端口
+    name = vmess_data['ps']
+    vmess_data['ps'] = name.replace(replace_text, replacement_content)
+    # 将修改后的数据转换回JSON字符串
+    modified_vmess_info = json.dumps(vmess_data, separators=(',', ':'), ensure_ascii=False)
+    # 进行Base64编码
+    encoded_modified_info = base64.urlsafe_b64encode(modified_vmess_info.encode('utf-8')).decode('utf-8').rstrip("=")
+
+    return f"vmess://{encoded_modified_info}\n"
+
+
+def main_update(file_url, replace_text, replacement_content=""):
+    """
+    读取文件并替换服务器名称的主方法
+    :param file_url: 文件路径
+    :param replace_text: 需要被替换的文本（旧）
+    :param replacement_content: 替换的内容（新）
+    """
+    node_list = []
+    # 适用于直接替换地址就可以改变名称的服务器 quote：将汉字转码 unquote：将码转汉字
+    directly_replace_characters = quote(replace_text)
+    item_replacement_content = quote(replacement_content)
+    with open(file_url, 'r', encoding='utf-8') as file:
+        for line in file:
+            if "vmess" in line:
+                # 处理每一行的内容
+                line = update_source_vmess(replace_text, line)
+            elif "vless" in line or "trojan" or "ss" in line:
+                line = line.replace(directly_replace_characters, item_replacement_content)
+            else:
+                # line = f"当前服务器无法解析{line}"
+                continue
+            node_list.append(line)
+    # 将处理好的数据写入到新文件中
+    with open('./data/new.txt', 'w', encoding='utf-8') as new_file:
+        for line in node_list:
+            new_file.write(line)
+    set_str = '\n'.join(node_list)
+    # 将字符串复制到剪贴板
+    pyperclip.copy(set_str)
 
 
 if __name__ == '__main__':
