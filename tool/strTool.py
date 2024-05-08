@@ -1,9 +1,9 @@
+import binascii
 import os
 import re
 import sys
 import base64
 import json
-from urllib.parse import quote
 
 import pyperclip
 from PyQt5.QtGui import QIcon
@@ -85,6 +85,14 @@ def update_source_vmess(replace_text, vmess_info, replacement_content=""):
     :param replacement_content: 替换的内容（新）
     :return:
     """
+    # try:
+    vmess_info = vmess_info.rstrip("\n")
+    # 计算需要添加的填充字符数量
+    padding_needed = 4 - (len(vmess_info) % 4)
+
+    # 添加填充字符
+    vmess_info += "=" * padding_needed
+
     # 进行Base64解码
     decoded_info = base64.urlsafe_b64decode(vmess_info[len("vmess://"):]).decode('utf-8')
     # 解析JSON格式
@@ -95,43 +103,19 @@ def update_source_vmess(replace_text, vmess_info, replacement_content=""):
     # 将修改后的数据转换回JSON字符串
     modified_vmess_info = json.dumps(vmess_data, separators=(',', ':'), ensure_ascii=False)
     # 进行Base64编码
-    encoded_modified_info = base64.urlsafe_b64encode(modified_vmess_info.encode('utf-8')).decode('utf-8').rstrip("=")
+    encoded_modified_info = base64.urlsafe_b64encode(modified_vmess_info.encode('utf-8')).decode('utf-8').rstrip(
+        "=")
 
     return f"vmess://{encoded_modified_info}\n"
-
-
-def main_update(file_url, replace_text, replacement_content=""):
-    """
-    读取文件并替换服务器名称的主方法
-    :param file_url: 文件路径
-    :param replace_text: 需要被替换的文本（旧）
-    :param replacement_content: 替换的内容（新）
-    """
-    node_list = []
-    # 适用于直接替换地址就可以改变名称的服务器 quote：将汉字转码 unquote：将码转汉字
-    directly_replace_characters = quote(replace_text)
-    item_replacement_content = quote(replacement_content)
-    with open(file_url, 'r', encoding='utf-8') as file:
-        for line in file:
-            if "vmess" in line:
-                # 处理每一行的内容
-                line = update_source_vmess(replace_text, line)
-            elif "vless" in line or "trojan" or "ss" in line:
-                line = line.replace(directly_replace_characters, item_replacement_content)
-            else:
-                # line = f"当前服务器无法解析{line}"
-                continue
-            node_list.append(line)
-    # 将处理好的数据写入到新文件中
-    with open('./data/new.txt', 'w', encoding='utf-8') as new_file:
-        for line in node_list:
-            new_file.write(line)
-    set_str = '\n'.join(node_list)
-    # 将字符串复制到剪贴板
-    pyperclip.copy(set_str)
+    # except binascii.Error as e:
+    #     print("上面那个有问题")
+    #     # print(f"错误服务器：{vmess_info}")
+    #     # print("Error decoding Base64 string:", e)
+    #     # 处理错误情况
+    #     return None
 
 
 if __name__ == '__main__':
-    # print(get_package_icon_path(""))
-    s = "如需要设置默认代理服务器请执行以下步骤：<ul><li>找到文件根目录</li><li>进入data目录</li><li>修改config.json的default_proxy_server和default_proxy_proxy【：】后面的值</li></ul>"
-    print(split_string_by_length(s, 8))
+    item = update_source_vmess("(yudou66.com 玉豆免费节点)",
+                               "vmess://eyJ2IjoiMiIsInBzIjoiICBVUzIzOCIsImFkZCI6IjEwNC4xOS40NC4xNTciLCJwb3J0IjoiODA4MCIsImlkIjoiM2ZkZjlkNDgtNTc4YS00MmRjLTlmZGQtMGRmY2VmYTNkMGM1IiwiYWlkIjoiMCIsInNjeSI6ImF1dG8iLCJuZXQiOiJ3cyIsInR5cGUiOiJub25lIiwiaG9zdCI6ImFtZDIuNzIwMjA4Lnh5eiIsInBhdGgiOiIvP2VkPTIwNDgmVGVsZWdyYW3wn4eo8J-HsyBAV2FuZ0NhaV84IiwidGxzIjoiIiwic25pIjoiIiwiYWxwbiI6IiIsImZwIjoiIn0")
+    # print(item)

@@ -1,9 +1,10 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QApplication, QFileDialog
 
+from tool.FileTool import main_update
 from tool.LabelTool import set_proxy_server_info_label, \
     set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label, fraud_score_font_color, \
-    delayed_font_color
+    delayed_font_color, division_line
 from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip, \
     get_curr_ip_fraud_score, get_curr_ip_fraud_score_use_api
 from tool.strTool import *
@@ -109,16 +110,22 @@ class HomePage(QWidget):
         self.initUI()
 
     def initUI(self):
+        # basic_information_segmentation_line_label = QLabel()
+        # basic_information_segmentation_line_label.setText(division_line("11"))
+
         self.replace_node_name_label = QLabel("批量替换节点名称：")
         self.replace_node_name_edit_old = QLineEdit()
         self.replace_node_name_edit_old.setPlaceholderText("被替换的文字")
+        self.replace_node_name_edit_old.setToolTip("被替换的文字")
         self.replace_node_name_edit_new = QLineEdit()
         self.replace_node_name_edit_new.setPlaceholderText("替换后的文字")
+        self.replace_node_name_edit_new.setToolTip("替换后的文字")
         self.replace_node_name_btn = QPushButton("选择文件")
         replace_node_name_tip = ("文件中的内容需要是节点服务器信息，节点服务器需要一行一个<br>"
                                  "如果文件不是按行分的话会解析失败")
         # self.replace_node_name_btn.setToolTip(split_string_by_length(replace_node_name_tip, self.TEXT_WIDTH))
         self.replace_node_name_btn.setToolTip(replace_node_name_tip)
+        self.replace_node_name_btn.setIcon(QIcon(get_package_icon_path('data/image/选择文件.png')))
         self.replace_node_name_btn.clicked.connect(self.replace_node_name_fn)
 
         self.current_speed_url_label = QLabel(
@@ -258,6 +265,10 @@ class HomePage(QWidget):
 
         # 创建垂直布局，并将文本标签和按钮添加到布局中
         y_box = QVBoxLayout()
+
+        # basic_information_segmentation_line_x_box = QHBoxLayout()
+        # basic_information_segmentation_line_x_box.addWidget(basic_information_segmentation_line_label)
+        # y_box.addLayout(basic_information_segmentation_line_x_box)
 
         # ipv4布局
         ipv4_add_x_box = QHBoxLayout()
@@ -593,8 +604,24 @@ class HomePage(QWidget):
         self.delay_detection_btn.show()
 
     def replace_node_name_fn(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "选择文件")
         replace_text = self.replace_node_name_edit_old.text()
         replacement_content = self.replace_node_name_edit_new.text()
-        main_update(file_path, replace_text, replacement_content)
-        self.replace_node_name_btn.setText("已将服务器复制到粘贴板")
+        if replace_text:
+            file_path, _ = QFileDialog.getOpenFileName(self, "选择文件")
+            if file_path:
+                main_update(file_path, replace_text, replacement_content)
+                # self.replace_node_name_btn.setText("修改成功")
+                # self.replace_node_name_btn.setIcon(QIcon(get_package_icon_path('data/image/成功.png')))
+                replace_node_name_tip = ("服务器信息以及自动复制到粘贴板<br>"
+                                         "在程序同级的data/nodeMsgs目录下保存了本次修改的节点信息<br>"
+                                         "可基于该文件进行二次修改")
+                self.replace_node_name_btn.setToolTip(replace_node_name_tip)
+                # 设置按钮刷新时间
+                set_refresh_btn_label(self.refresh_btn)
+
+            self.replace_node_name_btn.setIcon(QIcon(get_package_icon_path('data/image/选择文件.png')))
+        else:
+            self.replace_node_name_btn.setIcon(QIcon(get_package_icon_path('data/image/关闭.png')))
+            self.replace_node_name_edit_old.setPlaceholderText("请输入内容！！")
+            replace_node_name_tip = "请输入需要替换的内容"
+            self.replace_node_name_btn.setToolTip(replace_node_name_tip)
