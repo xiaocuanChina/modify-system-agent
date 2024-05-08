@@ -7,5 +7,6 @@
   "localJsonConfigurationFileURL": "",
   "localJsonConfigurationItem": "speedTestItem.speedPingTestUrl",
   "scamalyticsuUserName": "",
-  "scamalyticsuKey": ""
+  "scamalyticsuKey": "",
+  "numberOfReservedNodeFiles": 1
 }
