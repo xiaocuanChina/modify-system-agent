@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayo
 from tool.FileTool import main_update
 from tool.LabelTool import set_proxy_server_info_label, \
     set_refresh_btn_label, update_connection_time_tip_test_url, set_agent_status_label, fraud_score_font_color, \
-    delayed_font_color, division_line
+    delayed_font_color
 from tool.IPTool import get_IPv4_path, get_proxy_location, get_connection_time, get_target_server_ip, \
     get_curr_ip_fraud_score, get_curr_ip_fraud_score_use_api
 from tool.strTool import *
