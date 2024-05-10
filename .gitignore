@@ -5,5 +5,7 @@ test.py
 itemFolder
 data/config.json
 data/config.conf
+data/nodeMsgs/*
 tool/__pycache__/
 entity/__pycache__/
+
