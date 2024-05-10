@@ -12,7 +12,7 @@
 
 # GeoLite2-City.mmdb更新
 
-> 当前使用的版本：GeoLite2-City_20240423.tar.gz（周二）
+> 当前使用的版本：GeoLite2-City_20240507.tar.gz（周二）
 >
 > 需要下载的为：GeoLite2 City
 
@@ -211,4 +211,9 @@
 - scamalyticsuKey
 
     -  用于检测欺诈分值API（详情见【页面】-【欺诈分值】）的key
+    
+- numberOfReservedNodeFiles
 
+    > 使用批量替换之后会将数据自动存入到系统粘贴板，也会在本地生成一个服务器节点的txt文件，便于二次修改
+    
+    -  保留批量替换服务器名称的文件数量
