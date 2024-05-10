@@ -41,10 +41,7 @@
 
 
 # 页面
-![UI](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/4e1a0a1b-854d-43a9-8bff-9583fb1940a8)
-
-
-
+![PixPin_2024-05-10_09-38-57](https://github.com/xiaocuanChina/modify-system-agent/assets/113506112/97dbf4c7-8bba-4f3e-9a7f-916c2506e031)
 
 
 - 本机IPv4地址
