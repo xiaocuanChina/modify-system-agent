@@ -222,3 +222,14 @@
     > 使用批量替换之后会将数据自动存入到系统粘贴板，也会在本地生成一个服务器节点的txt文件，便于二次修改
     
     -  保留批量替换服务器名称的文件数量
+
+
+
+# 我看别人加了我也加一个 Star History
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xiaocuanChina/modify-system-agent&type=Date&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xiaocuanChina/modify-system-agent&type=Date" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xiaocuanChina/modify-system-agent&type=Date" />
+</picture>
+
